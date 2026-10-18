@@ -313,7 +313,7 @@ footer{font-size:.8rem;color:var(--muted);text-align:center;padding-inline:8px}
       </div>
       <p class="muted" style="font-size:.9rem" id="news-date"></p>
       <button class="btn primary block" id="btn-radio">▶ Escuchar las noticias de hoy</button>
-      <span class="status" id="radio-status"></span>
+      <div class="row" style="justify-content:space-between"><span class="status" id="radio-status"></span><button class="btn small" data-goto="uitspraak" data-focus-voice="1">Cambiar voz y velocidad</button></div>
     </div>
     <div class="news-list" id="news-list"></div>
     <div class="card" id="news-reader" hidden style="display:flex;flex-direction:column;gap:16px"></div>
@@ -350,6 +350,7 @@ footer{font-size:.8rem;color:var(--muted);text-align:center;padding-inline:8px}
   <section class="panel" id="p-uitspraak" hidden>
     <div><h2>Pronunciación</h2><p class="muted">Escucha el modelo, repítelo en voz alta y compara. El micrófono comprueba si se te entiende; no mide el acento con precisión, así que escucha también tu grabación.</p></div>
     <div class="mic-banner" id="mic-banner"></div>
+    <div class="card" id="voice-card" style="display:flex;flex-direction:column;gap:12px"></div>
     <div class="card" style="display:flex;flex-direction:column;gap:12px">
       <div class="row" style="justify-content:space-between"><h3>Zeg het na · repite después de mí</h3><button class="btn small" id="btn-more-phrases">Otras frases</button></div>
       <p class="muted" style="font-size:.9rem">Técnica de <i>shadowing</i>: escucha la frase lenta, después a velocidad normal, y repítela imitando el ritmo y la melodía.</p>
@@ -481,23 +482,50 @@ function renderStats() {
 renderStats();
 
 /* ---------- Voz */
-let voice = null;
+/* Se elige la voz neerlandesa más natural del dispositivo: primero las neuronales
+   (Edge «Online (Natural)», Google, Apple «Mejorada/Premium»), y dentro de ellas, acento belga. */
+let voice = null, voices = [];
 const hasTTS = "speechSynthesis" in window;
+let userRate = store.get("ved.rate", 1);
+const isNatural = v => /natural|neural|online|premium|enhanced|mejorada|wavenet|siri/i.test(v.name);
+function scoreVoice(v) {
+  let s = 0;
+  if (isNatural(v)) s += 100;
+  if (/google/i.test(v.name)) s += 40;
+  if (/nl[-_]BE/i.test(v.lang)) s += 30; else if (/nl[-_]NL/i.test(v.lang)) s += 10;
+  if (!v.localService) s += 5;
+  if (/espeak|compact/i.test(v.name)) s -= 80;
+  return s;
+}
 function pickVoice() {
   if (!hasTTS) return;
-  const vs = speechSynthesis.getVoices();
-  voice = vs.find(v => /nl[-_]BE/i.test(v.lang)) || vs.find(v => /^nl/i.test(v.lang)) || null;
+  voices = speechSynthesis.getVoices().filter(v => /^nl/i.test(v.lang)).sort((a, b) => scoreVoice(b) - scoreVoice(a));
+  const saved = store.get("ved.voice", null);
+  voice = voices.find(v => v.voiceURI === saved) || voices[0] || null;
+  if (window.__renderVoicePicker) window.__renderVoicePicker();
 }
-if (hasTTS) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
-function speak(text, onend, rate = 0.9) {
+if (hasTTS) { pickVoice(); speechSynthesis.addEventListener ? speechSynthesis.addEventListener("voiceschanged", pickVoice) : (speechSynthesis.onvoiceschanged = pickVoice); }
+/* Lee frase a frase con una pausa breve entre ellas: suena más natural y evita que Chrome corte los textos largos. */
+let speakToken = 0;
+function speak(text, onend, rate = 0.95) {
   if (!hasTTS) return;
   speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = voice ? voice.lang : "nl-BE";
-  if (voice) u.voice = voice;
-  u.rate = rate;
-  if (onend) u.onend = u.onerror = onend;
-  speechSynthesis.speak(u);
+  const token = ++speakToken;
+  const parts = String(text).match(/[^.!?…]+[.!?…]+["'”»]?|[^.!?…]+$/g) || [String(text)];
+  let i = 0;
+  const next = () => {
+    if (token !== speakToken) return;
+    if (i >= parts.length) { if (onend) onend(); return; }
+    const u = new SpeechSynthesisUtterance(parts[i++].trim());
+    u.lang = voice ? voice.lang : "nl-BE";
+    if (voice) u.voice = voice;
+    u.rate = Math.min(1.6, rate * userRate);
+    u.pitch = 1;
+    u.onend = () => setTimeout(next, i < parts.length ? 220 : 0);
+    u.onerror = e => { if (e.error === "interrupted" || e.error === "canceled") { if (onend && token === speakToken) onend(); } else next(); };
+    speechSynthesis.speak(u);
+  };
+  next();
 }
 const speakBtn = (text, label = "▶") => hasTTS ? `<button class="btn small" data-say="${esc(text)}" aria-label="Escuchar">${label}</button>` : "";
 document.addEventListener("click", e => { const b = e.target.closest("[data-say]"); if (b) speak(b.dataset.say); });
@@ -516,7 +544,7 @@ function showTab(name) {
   TABS.forEach(n => document.getElementById("p-" + n).hidden = n !== name);
   store.set("ved.tab", name);
 }
-function stopAudio() { if (hasTTS) speechSynthesis.cancel(); if (window.__stopPlayers) window.__stopPlayers(); }
+function stopAudio() { speakToken++; if (hasTTS) speechSynthesis.cancel(); if (window.__stopPlayers) window.__stopPlayers(); }
 tabs.forEach(t => t.addEventListener("click", () => { showTab(t.dataset.tab); window.scrollTo({ top: 0 }); }));
 document.addEventListener("click", e => { const g = e.target.closest("[data-goto]"); if (g) { showTab(g.dataset.goto); window.scrollTo({ top: 0, behavior: "smooth" }); } });
 const hashTab = location.hash.replace("#", "");
@@ -1331,6 +1359,36 @@ Responde SOLO con un array JSON de 10 objetos: {"vraag":"texto de la pregunta (u
   }
 }
 renderTestIntro();
+
+/* ---------- Selector de voz */
+const VOICE_SAMPLE = "Goeiedag! Welkom bij Vlaams elke dag. Vandaag lezen we samen het nieuws uit Limburg.";
+const RATES = [[0.85, "Lenta"], [1, "Normal"], [1.12, "Rápida"]];
+function voiceTip() {
+  const ua = navigator.userAgent;
+  if (/iPhone|iPad|Macintosh/.test(ua) && /Safari/.test(ua) && !/Chrome|Edg/.test(ua))
+    return "Para una voz más humana en iPhone: Ajustes › Accesibilidad › Contenido leído › Voces › Neerlandés › descarga «Ellen (Mejorada)» o una voz «Premium».";
+  if (/Android/.test(ua)) return "Para una voz más humana en Android: Ajustes › Sistema › Idiomas › Salida de texto a voz › Motor de Google › Instalar datos de voz › Nederlands (België). Elige la voz de mayor calidad.";
+  if (/Edg\//.test(ua)) return "Edge tiene voces neuronales muy naturales: elige «Arnaud» o «Dena Online (Natural)» de Bélgica.";
+  return "Las voces más naturales en el ordenador están en Microsoft Edge: «Arnaud» y «Dena Online (Natural)», con acento belga y gratis. Abre la app en Edge para usarlas.";
+}
+window.__renderVoicePicker = function () {
+  const el = document.getElementById("voice-card"); if (!el) return;
+  if (!hasTTS) { el.innerHTML = `<h3>Voz de lectura</h3><p class="muted">Este navegador no puede leer en voz alta. Usa Chrome, Edge o Safari.</p>`; return; }
+  const natural = voices.some(isNatural);
+  const label = v => `${v.name.replace(/Microsoft |Google |\s*-\s*Dutch.*$|\s*\(.*Dutch.*\)/g, "")} · ${/BE/i.test(v.lang) ? "Bélgica" : "Países Bajos"}${isNatural(v) ? " · natural" : ""}`;
+  el.innerHTML = `<div class="row" style="justify-content:space-between"><h3>Voz de lectura</h3>${voice && isNatural(voice) ? '<span class="tag">Voz natural</span>' : ""}</div>
+    ${voices.length ? `<select id="voice-select" aria-label="Voz">${voices.map(v => `<option value="${esc(v.voiceURI)}" ${voice && v.voiceURI === voice.voiceURI ? "selected" : ""}>${esc(label(v))}</option>`).join("")}</select>`
+      : `<p class="muted">No hay voces neerlandesas instaladas en este dispositivo. Se usará la voz por defecto.</p>`}
+    <div class="seg" role="group" aria-label="Velocidad">${RATES.map(([r, l]) => `<button data-rate="${r}" aria-pressed="${Math.abs(userRate - r) < .01}">${l}</button>`).join("")}</div>
+    <button class="btn dark block" id="voice-test">▶ Probar la voz</button>
+    ${natural && voice && isNatural(voice) ? "" : `<p class="hint">${voiceTip()}</p>`}`;
+  const sel = el.querySelector("#voice-select");
+  if (sel) sel.onchange = () => { voice = voices.find(v => v.voiceURI === sel.value) || voice; store.set("ved.voice", sel.value); window.__renderVoicePicker(); speak(VOICE_SAMPLE); };
+  el.querySelectorAll("[data-rate]").forEach(b => b.onclick = () => { userRate = +b.dataset.rate; store.set("ved.rate", userRate); el.querySelectorAll("[data-rate]").forEach(x => x.setAttribute("aria-pressed", String(x === b))); speak(VOICE_SAMPLE); });
+  el.querySelector("#voice-test").onclick = () => speak(VOICE_SAMPLE);
+};
+window.__renderVoicePicker();
+document.addEventListener("click", e => { if (e.target.closest("[data-focus-voice]")) setTimeout(() => document.getElementById("voice-card").scrollIntoView({ behavior: "smooth", block: "start" }), 400); });
 
 /* ---------- Pantalla de inicio */
 function renderHome() {
