@@ -1,0 +1,1237 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F2C230">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Vlaams">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px system-ui,sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<title>Vlaams Elke Dag</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: a single narrow "cahier" column, sticky tab bar; lion-yellow marks the one thing to act on */
+:root{
+  --bg:#F3F4F0; --surface:#FFFFFF; --ink:#16192A; --muted:#5E6274; --line:#DADCD4;
+  --accent:#F2C230; --accent-ink:#16192A; --soft:#FBF1CC;
+  --good:#1E7A4C; --good-bg:#E2F2E8; --bad:#C2352B; --bad-bg:#F9E3E0;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12141E; --surface:#1B1E2B; --ink:#ECEDF2; --muted:#9EA2B5; --line:#2C3042;
+  --accent:#F2C230; --accent-ink:#16192A; --soft:#33301E;
+  --good:#5BC98D; --good-bg:#183326; --bad:#F07A70; --bad-bg:#3A1E1D; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12141E; --surface:#1B1E2B; --ink:#ECEDF2; --muted:#9EA2B5; --line:#2C3042;
+  --accent:#F2C230; --accent-ink:#16192A; --soft:#33301E;
+  --good:#5BC98D; --good-bg:#183326; --bad:#F07A70; --bad-bg:#3A1E1D; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:760px;margin:0 auto;padding-block:28px 64px;display:flex;flex-direction:column;gap:28px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.1}
+h1{font-size:clamp(2rem,6vw,3rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:1.5rem;font-weight:700}
+h3{font-size:1.1rem;font-weight:700}
+p{margin:0}
+.eyebrow{font-size:.75rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:700}
+.muted{color:var(--muted)}
+.mono{font-family:var(--f-mono)}
+a{color:inherit}
+
+header.top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.lion{display:inline-block;background:var(--accent);color:var(--accent-ink);padding:0 .25em;border-radius:4px}
+.stats{display:flex;gap:18px}
+.stat{display:flex;flex-direction:column;align-items:flex-end}
+.stat b{font-family:var(--f-display);font-size:1.6rem;font-variant-numeric:tabular-nums;line-height:1}
+.stat span{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:4px;
+  border-bottom:2px solid var(--line);padding-top:6px;overflow-x:auto}
+nav.tabs button{font:700 .95rem var(--f-body);background:none;border:0;color:var(--muted);padding:10px 14px;cursor:pointer;
+  border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+nav.tabs button:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+section.panel{display:flex;flex-direction:column;gap:20px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{font:700 .95rem var(--f-body);border-radius:8px;padding:10px 16px;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.small{padding:6px 10px;font-size:.85rem}
+.btn:disabled{opacity:.5;cursor:default}
+input[type=text],select,textarea{font:1rem var(--f-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;width:100%}
+textarea{min-height:180px;resize:vertical;line-height:1.5}
+
+/* Challenge */
+.progress{display:flex;gap:6px}
+.progress i{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.progress i.ok{background:var(--good)} .progress i.ko{background:var(--bad)} .progress i.now{background:var(--accent)}
+.q-verb{font-family:var(--f-display);font-size:clamp(2.2rem,8vw,3.4rem);font-weight:800;letter-spacing:-.02em;line-height:1}
+.q-prompt{font-size:1.15rem}
+.q-prompt .mono{background:var(--soft);padding:1px 6px;border-radius:4px}
+.answer-row{display:flex;gap:10px}
+.answer-row input{flex:1;min-width:0;font-family:var(--f-mono);font-size:1.1rem}
+.feedback{border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.feedback.ok{background:var(--good-bg);color:var(--ink)} .feedback.ok b{color:var(--good)}
+.feedback.ko{background:var(--bad-bg);color:var(--ink)} .feedback.ko b{color:var(--bad)}
+.conj{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:4px 16px;font-size:.92rem}
+.conj div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dashed var(--line);padding:3px 0}
+.conj span:first-child{color:var(--muted)}
+.conj span:last-child{font-family:var(--f-mono)}
+.tag{display:inline-block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:2px 7px;border-radius:999px;background:var(--soft);color:var(--ink);vertical-align:middle}
+.example{font-style:italic}
+
+.verb-list{display:flex;flex-direction:column}
+.verb-item{border-top:1px solid var(--line)}
+.verb-item summary{display:flex;justify-content:space-between;gap:12px;padding:10px 2px;cursor:pointer;list-style:none}
+.verb-item summary::-webkit-details-marker{display:none}
+.verb-item summary b{font-family:var(--f-display);font-size:1.05rem}
+.verb-item .body{padding:4px 2px 14px;display:flex;flex-direction:column;gap:8px}
+
+/* News */
+.papers{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.paper{display:flex;flex-direction:column;gap:6px;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);text-decoration:none}
+.paper:hover{border-color:var(--accent)}
+.paper .name{font-family:var(--f-display);font-weight:700;font-size:1.1rem}
+.paper .meta{display:flex;justify-content:space-between;gap:8px;font-size:.8rem;color:var(--muted)}
+.lvl{font-family:var(--f-mono);font-size:.75rem;background:var(--soft);padding:1px 6px;border-radius:4px;color:var(--ink)}
+.steps{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+.result{display:flex;flex-direction:column;gap:16px}
+.result ul{margin:0;padding-left:1.2em}
+.vocab{display:grid;grid-template-columns:1fr 1fr;gap:2px 16px;font-size:.95rem}
+.vocab span:nth-child(odd){font-weight:700}
+.qa details{border-top:1px solid var(--line);padding:8px 0}
+.qa summary{cursor:pointer}
+.status{font-size:.9rem;color:var(--muted)}
+
+/* Test */
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{text-align:left;font:1rem var(--f-body);padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.ok{background:var(--good-bg);border-color:var(--good)}
+.opt.ko{background:var(--bad-bg);border-color:var(--bad)}
+.levels{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.level{border:1px solid var(--line);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:2px;text-align:center}
+.level b{font-family:var(--f-display);font-size:1.3rem}
+.level.reached{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.big-level{font-family:var(--f-display);font-size:4rem;font-weight:800;line-height:1}
+/* Guía y pistas */
+.hint{font-size:.9rem;color:var(--muted);background:var(--bg);border-radius:8px;padding:8px 12px}
+.hint .mono{color:var(--ink)}
+.guide{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.guide > div{display:flex;flex-direction:column;gap:6px;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.guide .ex{font-family:var(--f-mono);font-size:.9rem;background:var(--soft);border-radius:6px;padding:6px 8px;line-height:1.5}
+
+/* Hoy en Limburg */
+.featured{border:2px solid var(--accent)}
+.news-list{display:flex;flex-direction:column}
+.news-item{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;text-align:left;width:100%;padding:12px 4px;background:none;border:0;border-top:1px solid var(--line);color:var(--ink);font:1rem var(--f-body);cursor:pointer}
+.news-item:hover b,.news-item[aria-current="true"] b{text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:3px}
+.news-item b{font-family:var(--f-display);font-size:1.05rem;display:block}
+.seg{display:flex;gap:4px;background:var(--bg);border-radius:8px;padding:4px;flex-wrap:wrap}
+.seg button{flex:1;font:700 .9rem var(--f-body);border:0;border-radius:6px;padding:8px 10px;background:none;color:var(--muted);cursor:pointer;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.sent{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px dashed var(--line)}
+.sent p{flex:1;min-width:0}
+.sent .tr{display:block;color:var(--muted);font-size:.92rem;font-style:italic}
+.sent.playing p{background:var(--soft);border-radius:4px}
+.diff{font-family:var(--f-mono);font-size:.95rem;line-height:1.9}
+.diff .w-ok{color:var(--good)}
+.diff .w-bad{color:var(--bad);text-decoration:line-through}
+.diff .w-fix{color:var(--good);font-weight:700}
+.diff .w-miss{color:var(--bad);border-bottom:2px solid var(--bad)}
+.dict-row{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-bottom:1px solid var(--line)}
+/* Pronunciación */
+.mic-banner:empty{display:none}
+.mic-banner{border-radius:10px;padding:14px 16px;background:var(--soft);display:flex;flex-direction:column;gap:6px;font-size:.95rem}
+.mic-banner code{font-family:var(--f-mono);font-size:.85rem;word-break:break-all;background:var(--surface);padding:2px 6px;border-radius:4px}
+.pron{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-top:1px solid var(--line)}
+.pron .ptext{font-size:1.05rem}
+.pron .ptr{color:var(--muted);font-size:.9rem;font-style:italic}
+.btn.mic{border-color:var(--bad);color:var(--bad)}
+.btn.mic.rec{background:var(--bad);color:#fff;animation:none}
+@media (prefers-reduced-motion:no-preference){.btn.mic.rec{animation:pulse 1s ease-in-out infinite}@keyframes pulse{50%{opacity:.7}}}
+.score{font-family:var(--f-display);font-weight:800;font-size:1.4rem;font-variant-numeric:tabular-nums}
+.sound{display:grid;grid-template-columns:minmax(70px,auto) 1fr;gap:4px 16px;padding:12px 0;border-top:1px solid var(--line)}
+.sound .sym{font-family:var(--f-display);font-weight:800;font-size:1.5rem;line-height:1}
+.sound .words{display:flex;gap:6px;flex-wrap:wrap;grid-column:2}
+.pair-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pair-opts .opt{text-align:center;font-family:var(--f-display);font-size:1.3rem;font-weight:700}
+.pair-opts .opt small{display:block;font:400 .8rem var(--f-body);color:var(--muted)}
+/* Rutina */
+.routine{display:flex;flex-direction:column;gap:2px}
+.routine label{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line);cursor:pointer}
+.routine label:first-child{border-top:0}
+.routine input{width:20px;height:20px;accent-color:var(--good)}
+.routine .why{display:block;color:var(--muted);font-size:.85rem}
+.routine label.done span b{text-decoration:line-through;text-decoration-color:var(--good)}
+footer{font-size:.8rem;color:var(--muted)}
+@media (max-width:480px){.levels{grid-template-columns:repeat(2,1fr)}.vocab{grid-template-columns:1fr}.vocab span:nth-child(even){margin-bottom:6px}}
+@media (prefers-reduced-motion:no-preference){.pop{animation:pop .25s ease-out}@keyframes pop{from{transform:scale(.97);opacity:.6}to{transform:none;opacity:1}}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <p class="eyebrow" id="today-label">Vandaag</p>
+      <h1>Vlaams <span class="lion">elke dag</span></h1>
+      <p class="muted">Neerlandés de Bélgica: verbos diarios, prensa flamenca y test de nivel.</p>
+    </div>
+    <div class="stats" aria-label="Tu progreso">
+      <div class="stat"><b id="st-streak">0</b><span>racha</span></div>
+      <div class="stat"><b id="st-best">0</b><span>mejor</span></div>
+      <div class="stat"><b id="st-level">–</b><span>nivel</span></div>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="tab-uitdaging" aria-selected="true" data-tab="uitdaging">Reto del día</button>
+    <button role="tab" id="tab-werkwoorden" aria-selected="false" data-tab="werkwoorden">Verbos</button>
+    <button role="tab" id="tab-kranten" aria-selected="false" data-tab="kranten">Periódicos</button>
+    <button role="tab" id="tab-uitspraak" aria-selected="false" data-tab="uitspraak">Pronunciación</button>
+    <button role="tab" id="tab-test" aria-selected="false" data-tab="test">Test de nivel</button>
+  </nav>
+
+  <!-- RETO DEL DÍA -->
+  <section class="panel" id="p-uitdaging">
+    <div class="card" id="routine" style="display:flex;flex-direction:column;gap:10px"></div>
+    <div class="card" id="challenge"></div>
+    <p class="muted" style="font-size:.9rem">Cada día salen 5 verbos nuevos con un ejercicio distinto: presente, pasado (imperfectum), perfectum o traducción. Completa el reto para mantener tu racha. ¿Dudas al responder? Mira la guía de abajo.</p>
+    <div id="guide-slot-1"></div>
+  </section>
+
+  <!-- VERBOS -->
+  <section class="panel" id="p-werkwoorden" hidden>
+    <div class="row" style="justify-content:space-between">
+      <h2>Los verbos de cada día</h2>
+      <span class="muted" id="verb-count"></span>
+    </div>
+    <div id="guide-slot-2"></div>
+    <input type="text" id="verb-search" placeholder="Buscar: eten, comer, flamenco…" aria-label="Buscar verbo">
+    <div class="verb-list card" id="verb-list" style="padding-block:4px"></div>
+  </section>
+
+  <!-- PERIÓDICOS -->
+  <section class="panel" id="p-kranten" hidden>
+    <div class="card featured" style="display:flex;flex-direction:column;gap:14px">
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <div><p class="eyebrow">Tu periódico local · Het Belang van Limburg</p><h2>Vandaag in Limburg</h2></div>
+        <a class="btn small" href="https://www.hbvl.be" target="_blank" rel="noopener">hbvl.be ↗</a>
+      </div>
+      <p class="muted" style="font-size:.92rem" id="news-date"></p>
+      <div class="row"><button class="btn primary" id="btn-radio">▶ Escuchar las noticias de hoy</button><span class="status" id="radio-status"></span></div>
+      <div class="news-list" id="news-list"></div>
+    </div>
+    <div class="card" id="news-reader" hidden style="display:flex;flex-direction:column;gap:16px"></div>
+
+    <div><h2>Más prensa flamenca</h2><p class="muted">Abre un periódico, copia un artículo y pégalo en el lector de práctica de abajo. Te lo leo en voz alta, te lo explico y te hago preguntas.</p></div>
+    <div class="papers" id="papers"></div>
+
+    <div class="card" style="display:flex;flex-direction:column;gap:14px">
+      <div class="row" style="justify-content:space-between"><h3>Lector de práctica</h3><span class="tag" id="sample-tag" hidden>con Claude</span></div>
+      <ol class="steps muted" style="font-size:.92rem">
+        <li>Abre un artículo en uno de los periódicos (Wablieft si estás empezando).</li>
+        <li>Copia el texto y pégalo aquí.</li>
+        <li>Escúchalo o pide el análisis según tu nivel.</li>
+      </ol>
+      <textarea id="article" aria-label="Texto del artículo"></textarea>
+      <div class="row">
+        <label for="read-level" class="muted" style="font-size:.9rem">Mi nivel</label>
+        <select id="read-level" style="width:auto"><option>A1</option><option selected>A2</option><option>B1</option><option>B2</option></select>
+        <button class="btn" id="btn-speak">▶ Leer en voz alta</button>
+        <button class="btn" id="btn-stop" hidden>■ Parar</button>
+        <button class="btn primary" id="btn-analyze" hidden>Explicar el artículo</button>
+      </div>
+      <p class="status" id="analyze-status"></p>
+      <div class="result" id="analysis"></div>
+    </div>
+  </section>
+
+  <!-- PRONUNCIACIÓN -->
+  <section class="panel" id="p-uitspraak" hidden>
+    <div><h2>Pronunciación</h2><p class="muted">Escucha el modelo, repítelo en voz alta y compara. El micrófono comprueba si se te entiende; no mide el acento con precisión, así que escucha también tu grabación.</p></div>
+    <div class="mic-banner" id="mic-banner"></div>
+    <div class="card" style="display:flex;flex-direction:column;gap:12px">
+      <div class="row" style="justify-content:space-between"><h3>Zeg het na · repite después de mí</h3><button class="btn small" id="btn-more-phrases">Otras frases</button></div>
+      <p class="muted" style="font-size:.9rem">Técnica de <i>shadowing</i>: escucha la frase lenta, después a velocidad normal, y repítela imitando el ritmo y la melodía.</p>
+      <div id="phrase-list"></div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:12px">
+      <h3>Entrena el oído · pares mínimos</h3>
+      <p class="muted" style="font-size:.9rem">Oirás una de las dos palabras. Elige cuál es. No necesita micrófono.</p>
+      <div id="pairs"></div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:4px">
+      <h3>Los sonidos difíciles del flamenco</h3>
+      <div id="sounds"></div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:8px">
+      <h3>Herramientas gratuitas para complementar</h3>
+      <ul class="steps">
+        <li><a href="https://forvo.com/languages/nl/" target="_blank" rel="noopener">Forvo</a>: grabaciones de hablantes reales. Filtra por acento «Belgium» para oír la versión flamenca.</li>
+        <li><a href="https://www.vrt.be/vrtmax/" target="_blank" rel="noopener">VRT MAX</a>: series y Het Journaal con subtítulos en neerlandés (gratis con cuenta).</li>
+        <li><a href="https://www.radio1.be/" target="_blank" rel="noopener">Radio 1</a> y <a href="https://www.radio2.be/limburg" target="_blank" rel="noopener">Radio 2 Limburg</a>: radio flamenca en directo para escuchar a diario.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- TEST -->
+  <section class="panel" id="p-test" hidden>
+    <div class="card" id="test"></div>
+  </section>
+
+  <footer>Tu racha, tu nivel y tus repasos se guardan solo en este navegador. La voz usa las voces neerlandesas de tu dispositivo (nl-BE si existe). El micrófono usa el reconocimiento de voz gratuito de Chrome o Edge, que envía el audio al servicio de voz del navegador.</footer>
+</div>
+
+<script>
+(() => {
+"use strict";
+/* ---------- Datos: infinitivo | español | ik,jij,hij,wij | pasado sg,pl | participio | aux (h,z,hz) | ejemplo | vl (=palabra flamenca) */
+const RAW = `zijn|ser, estar|ben,bent,is,zijn|was,waren|geweest|z|Amai, ik ben vandaag echt moe.
+hebben|tener|heb,hebt,heeft,hebben|had,hadden|gehad|h|Hebt ge goesting in een koffie?
+gaan|ir|ga,gaat,gaat,gaan|ging,gingen|gegaan|z|We gaan zaterdag naar de markt in Gent.
+komen|venir|kom,komt,komt,komen|kwam,kwamen|gekomen|z|Ze komt uit Leuven.
+doen|hacer|doe,doet,doet,doen|deed,deden|gedaan|h|Wat doe je dit weekend?
+maken|hacer, fabricar|maak,maakt,maakt,maken|maakte,maakten|gemaakt|h|Mijn oma maakt de beste stoverij.
+zeggen|decir|zeg,zegt,zegt,zeggen|zei,zeiden|gezegd|h|Allez, zeg eens eerlijk!
+kunnen|poder|kan,kunt/kan,kan,kunnen|kon,konden|gekund|h|Kun je dat nog eens herhalen?
+willen|querer|wil,wilt/wil,wil,willen|wilde/wou,wilden/wouden|gewild|h|Ik wil een frietje met mayonaise.
+moeten|deber, tener que|moet,moet,moet,moeten|moest,moesten|gemoeten|h|Ik moet morgen vroeg opstaan.
+mogen|poder (permiso)|mag,mag,mag,mogen|mocht,mochten|gemogen|h|Mag ik hier parkeren?
+zien|ver|zie,ziet,ziet,zien|zag,zagen|gezien|h|Heb je het journaal gezien?
+eten|comer|eet,eet,eet,eten|at,aten|gegeten|h|Wij eten om zes uur.
+drinken|beber|drink,drinkt,drinkt,drinken|dronk,dronken|gedronken|h|Hij drinkt een Duvel op café.
+slapen|dormir|slaap,slaapt,slaapt,slapen|sliep,sliepen|geslapen|h|Heb je goed geslapen?
+werken|trabajar|werk,werkt,werkt,werken|werkte,werkten|gewerkt|h|Ze werkt in Brussel.
+wonen|vivir (residir)|woon,woont,woont,wonen|woonde,woonden|gewoond|h|Ik woon in Antwerpen.
+spreken|hablar|spreek,spreekt,spreekt,spreken|sprak,spraken|gesproken|h|Spreekt u Nederlands?
+lezen|leer|lees,leest,leest,lezen|las,lazen|gelezen|h|Ik lees elke ochtend De Standaard.
+schrijven|escribir|schrijf,schrijft,schrijft,schrijven|schreef,schreven|geschreven|h|Schrijf je naam hier.
+kopen|comprar|koop,koopt,koopt,kopen|kocht,kochten|gekocht|h|Ik koop brood bij de bakker.
+betalen|pagar|betaal,betaalt,betaalt,betalen|betaalde,betaalden|betaald|h|Kan ik met Bancontact betalen?
+nemen|tomar, coger|neem,neemt,neemt,nemen|nam,namen|genomen|h|We nemen de tram naar het centrum.
+geven|dar|geef,geeft,geeft,geven|gaf,gaven|gegeven|h|Geef me de gsm eens.
+krijgen|recibir|krijg,krijgt,krijgt,krijgen|kreeg,kregen|gekregen|h|Ik kreeg een mail van de school.
+weten|saber|weet,weet,weet,weten|wist,wisten|geweten|h|Ik weet het niet.
+denken|pensar|denk,denkt,denkt,denken|dacht,dachten|gedacht|h|Ik denk dat het gaat regenen.
+vinden|encontrar; opinar|vind,vindt,vindt,vinden|vond,vonden|gevonden|h|Ik vind Brugge heel schoon.
+zoeken|buscar|zoek,zoekt,zoekt,zoeken|zocht,zochten|gezocht|h|Ik zoek een appartement.
+blijven|quedarse|blijf,blijft,blijft,blijven|bleef,bleven|gebleven|z|Blijf je eten?
+staan|estar de pie|sta,staat,staat,staan|stond,stonden|gestaan|h|De fiets staat buiten.
+zitten|estar sentado|zit,zit,zit,zitten|zat,zaten|gezeten|h|We zitten op het terras.
+liggen|estar tumbado|lig,ligt,ligt,liggen|lag,lagen|gelegen|h|De sleutels liggen op tafel.
+lopen|andar, correr|loop,loopt,loopt,lopen|liep,liepen|gelopen|hz|Ik loop elke dag naar het station.
+rijden|conducir, ir en vehículo|rijd,rijdt,rijdt,rijden|reed,reden|gereden|hz|De trein rijdt niet vandaag: staking!
+fietsen|ir en bici|fiets,fietst,fietst,fietsen|fietste,fietsten|gefietst|hz|Wij fietsen naar het werk.
+wachten|esperar|wacht,wacht,wacht,wachten|wachtte,wachtten|gewacht|h|Ik wacht op de bus.
+beginnen|empezar|begin,begint,begint,beginnen|begon,begonnen|begonnen|z|De les begint om negen uur.
+helpen|ayudar|help,helpt,helpt,helpen|hielp,hielpen|geholpen|h|Kan ik u helpen?
+vragen|preguntar, pedir|vraag,vraagt,vraagt,vragen|vroeg,vroegen|gevraagd|h|Mag ik iets vragen?
+leren|aprender, enseñar|leer,leert,leert,leren|leerde,leerden|geleerd|h|Ik leer Nederlands.
+begrijpen|comprender|begrijp,begrijpt,begrijpt,begrijpen|begreep,begrepen|begrepen|h|Ik begrijp het niet goed.
+verstaan|entender (oír y comprender)|versta,verstaat,verstaat,verstaan|verstond,verstonden|verstaan|h|Ik versta u niet, kunt u trager spreken?|vl
+koken|cocinar|kook,kookt,kookt,koken|kookte,kookten|gekookt|h|Vanavond kook ik mosselen.
+opstaan|levantarse|sta op,staat op,staat op,staan op|stond op,stonden op|opgestaan|z|Ik sta om zeven uur op.
+bellen|llamar (teléfono)|bel,belt,belt,bellen|belde,belden|gebeld|h|Ik bel je straks.
+kijken|mirar|kijk,kijkt,kijkt,kijken|keek,keken|gekeken|h|We kijken naar Het Journaal.
+luisteren|escuchar|luister,luistert,luistert,luisteren|luisterde,luisterden|geluisterd|h|Ik luister naar Radio 1.
+reizen|viajar|reis,reist,reist,reizen|reisde,reisden|gereisd|hz|Ze reist vaak met de trein.
+vertrekken|salir, partir|vertrek,vertrekt,vertrekt,vertrekken|vertrok,vertrokken|vertrokken|z|De trein vertrekt van spoor drie.
+brengen|traer, llevar|breng,brengt,brengt,brengen|bracht,brachten|gebracht|h|Ik breng de kinderen naar school.
+houden|sostener; (houden van) amar|hou,houdt,houdt,houden|hield,hielden|gehouden|h|Ik hou van Belgische chocolade.
+worden|llegar a ser, volverse|word,wordt,wordt,worden|werd,werden|geworden|z|Het wordt koud vanavond.
+sturen|enviar|stuur,stuurt,stuurt,sturen|stuurde,stuurden|gestuurd|h|Stuur me een berichtje.
+poetsen|limpiar|poets,poetst,poetst,poetsen|poetste,poetsten|gepoetst|h|Zaterdag poets ik het huis.|vl
+babbelen|charlar|babbel,babbelt,babbelt,babbelen|babbelde,babbelden|gebabbeld|h|We hebben de hele avond gebabbeld.|vl
+klappen|hablar, charlar (coloquial)|klap,klapt,klapt,klappen|klapte,klapten|geklapt|h|Ik heb met de buurvrouw geklapt.|vl
+zwemmen|nadar|zwem,zwemt,zwemt,zwemmen|zwom,zwommen|gezwommen|hz|In de zomer zwemmen we in de zee in Oostende.`;
+
+const VERBS = RAW.trim().split("\n").map(l => {
+  const [inf, es, pres, past, part, aux, ex, vl] = l.split("|");
+  return { inf, es, pres: pres.split(","), past: past.split(","), part, aux, ex, vl: vl === "vl" };
+});
+const AUXF = { h: { ik: "heb", wij: "hebben" }, z: { ik: "ben", wij: "zijn" } };
+
+/* ---------- Almacenamiento seguro */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+};
+const prog = store.get("ved.progress", { lastDone: null, streak: 0, best: 0, history: {}, level: null });
+
+/* ---------- Fecha */
+const today = new Date();
+const iso = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+const TODAY = iso(today);
+const yesterday = iso(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1));
+try {
+  document.getElementById("today-label").textContent =
+    today.toLocaleDateString("nl-BE", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+} catch {}
+if (prog.lastDone && prog.lastDone !== TODAY && prog.lastDone !== yesterday) { prog.streak = 0; store.set("ved.progress", prog); }
+
+function renderStats() {
+  document.getElementById("st-streak").textContent = prog.streak;
+  document.getElementById("st-best").textContent = prog.best;
+  document.getElementById("st-level").textContent = prog.level || "–";
+}
+renderStats();
+
+/* ---------- Voz */
+let voice = null;
+const hasTTS = "speechSynthesis" in window;
+function pickVoice() {
+  if (!hasTTS) return;
+  const vs = speechSynthesis.getVoices();
+  voice = vs.find(v => /nl[-_]BE/i.test(v.lang)) || vs.find(v => /^nl/i.test(v.lang)) || null;
+}
+if (hasTTS) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+function speak(text, onend, rate = 0.9) {
+  if (!hasTTS) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = voice ? voice.lang : "nl-BE";
+  if (voice) u.voice = voice;
+  u.rate = rate;
+  if (onend) u.onend = u.onerror = onend;
+  speechSynthesis.speak(u);
+}
+const speakBtn = (text, label = "▶") => hasTTS ? `<button class="btn small" data-say="${esc(text)}" aria-label="Escuchar">${label}</button>` : "";
+document.addEventListener("click", e => { const b = e.target.closest("[data-say]"); if (b) speak(b.dataset.say); });
+
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+const norm = s => s.toLowerCase().replace(/[.!?,]/g, "").replace(/\s+/g, " ").trim();
+
+/* ---------- Tabs */
+const tabs = [...document.querySelectorAll("nav.tabs button")];
+const TABS = ["uitdaging", "werkwoorden", "kranten", "uitspraak", "test"];
+function showTab(name) {
+  if (!TABS.includes(name)) name = "uitdaging";
+  stopAudio();
+  tabs.forEach(t => t.setAttribute("aria-selected", String(t.dataset.tab === name)));
+  TABS.forEach(n => document.getElementById("p-" + n).hidden = n !== name);
+  store.set("ved.tab", name);
+}
+function stopAudio() { if (hasTTS) speechSynthesis.cancel(); if (window.__stopPlayers) window.__stopPlayers(); }
+tabs.forEach(t => t.addEventListener("click", () => showTab(t.dataset.tab)));
+document.addEventListener("click", e => { const g = e.target.closest("[data-goto]"); if (g) { showTab(g.dataset.goto); window.scrollTo({ top: 0, behavior: "smooth" }); } });
+const hashTab = location.hash.replace("#", "");
+showTab(TABS.includes(hashTab) ? hashTab : store.get("ved.tab", "uitdaging"));
+
+/* ---------- Reto del día */
+function rng(seedStr) {
+  let h = 2166136261;
+  for (const c of seedStr) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); }
+  return () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 100000) / 100000; };
+}
+const PRON = ["ik", "jij", "hij / zij", "wij"];
+const HINTS = {
+  pres: 'Escribe solo el verbo. Ejemplo con <span class="mono">werken</span>: ik <span class="mono">werk</span> · jij <span class="mono">werkt</span> · wij <span class="mono">werken</span>',
+  past: 'Escribe solo el verbo. Ejemplo: ik <span class="mono">werkte</span> · wij <span class="mono">werkten</span> · ik <span class="mono">ging</span> (irregular)',
+  perf: 'Escribe el auxiliar y el participio. Ejemplo: <span class="mono">heb gewerkt</span> · <span class="mono">ben gegaan</span>',
+  mean: 'Escribe el infinitivo. Ejemplo: «comer» → <span class="mono">eten</span>'
+};
+const GUIDE = `<details class="card" style="padding:16px 20px"><summary style="cursor:pointer"><b style="font-family:var(--f-display);font-size:1.1rem">Cómo usar los verbos y cómo responder</b></summary>
+  <div style="display:flex;flex-direction:column;gap:14px;margin-top:14px">
+  <div class="guide">
+    <div><p class="eyebrow">Presente</p>
+      <p><b>ik</b> = la raíz (infinitivo sin -en). <b>jij, hij, zij</b> = raíz + <b>t</b>. <b>wij, jullie, zij</b> = el infinitivo.</p>
+      <p class="ex">werken → ik werk · jij werkt · hij werkt · wij werken</p>
+      <p class="muted" style="font-size:.88rem">Si preguntas, la t de jij desaparece: <span class="mono">Werk jij?</span> En Flandes oirás mucho <span class="mono">ge/gij</span>: <span class="mono">Werkt ge?</span></p></div>
+    <div><p class="eyebrow">Pasado (imperfectum)</p>
+      <p>Verbos regulares: raíz + <b>-te/-ten</b> si la raíz acaba en una consonante de <b>'t kofschip</b> (t, k, f, s, ch, p), y si no, <b>-de/-den</b>. Los irregulares cambian la vocal: apréndelos de memoria.</p>
+      <p class="ex">werken → werkte / werkten<br>wonen → woonde / woonden<br>gaan → ging / gingen</p></div>
+    <div><p class="eyebrow">Perfectum</p>
+      <p><b>hebben</b> o <b>zijn</b> + participio (<b>ge</b> + raíz + <b>t/d</b>). Se usa <b>zijn</b> con movimiento hacia un lugar o cambio de estado (gaan, komen, worden, beginnen).</p>
+      <p class="ex">ik heb gewerkt · ik ben gegaan<br>ik heb gefietst · ik ben naar Hasselt gefietst</p>
+      <p class="muted" style="font-size:.88rem">En Flandes se usa el perfectum para hablar del pasado mucho más que el imperfectum.</p></div>
+    <div><p class="eyebrow">Orden en la frase</p>
+      <p>El verbo conjugado va <b>segundo</b>. El participio o el infinitivo van <b>al final</b>.</p>
+      <p class="ex">Morgen <b>ga</b> ik naar Genk.<br>Ik <b>heb</b> de krant <b>gelezen</b>.<br>Ik <b>wil</b> een frietje <b>eten</b>.</p></div>
+  </div>
+  <div><p class="eyebrow" style="margin-bottom:6px">Así se responde en el reto</p>
+  <div class="conj" style="grid-template-columns:1fr">
+    <div><span>Presente: <span class="mono">jij ___</span> (komen)</span><span>komt</span></div>
+    <div><span>Pasado: <span class="mono">wij ___</span> (eten)</span><span>aten</span></div>
+    <div><span>Perfectum: <span class="mono">ik ___ ___</span> (lezen)</span><span>heb gelezen</span></div>
+    <div><span>Traducción: «comprar»</span><span>kopen</span></div>
+  </div>
+  <p class="muted" style="font-size:.88rem;margin-top:6px">No importan las mayúsculas ni el punto final. Para kunnen y willen valen las dos formas de jij (<span class="mono">kunt</span> o <span class="mono">kan</span>).</p></div>
+  </div></details>`;
+document.getElementById("guide-slot-1").innerHTML = GUIDE;
+document.getElementById("guide-slot-2").innerHTML = GUIDE.replace("<details ", "<details open ");
+function buildSet(seed, review = []) {
+  const r = rng(seed), out = [];
+  const fixed = review.map(inf => VERBS.find(v => v.inf === inf)).filter(Boolean).slice(0, 3);
+  const pool = VERBS.filter(v => !fixed.includes(v));
+  for (let k = 0; k < 5; k++) {
+    const v = k < fixed.length ? fixed[k] : pool.splice(Math.floor(r() * pool.length), 1)[0];
+    const type = ["pres", "past", "perf", "mean"][Math.floor(r() * 4)];
+    let prompt, answers;
+    if (type === "pres") {
+      const p = Math.floor(r() * 4);
+      prompt = `Presente: <span class="mono">${PRON[p]} ___</span>`;
+      answers = v.pres[p].split("/");
+    } else if (type === "past") {
+      const pl = r() < .5 ? 0 : 1;
+      prompt = `Pasado (imperfectum): <span class="mono">${pl ? "wij" : "ik"} ___</span>`;
+      answers = v.past[pl].split("/");
+    } else if (type === "perf") {
+      prompt = `Perfectum: <span class="mono">ik ___ ___</span> <span class="muted">(auxiliar + participio)</span>`;
+      answers = v.aux.split("").map(a => AUXF[a].ik + " " + v.part);
+    } else {
+      prompt = `¿Cómo se dice en neerlandés <b>«${esc(v.es)}»</b>? <span class="muted">(infinitivo)</span>`;
+      answers = [v.inf];
+    }
+    out.push({ v, type, prompt, answers, hint: HINTS[type], review: k < fixed.length });
+  }
+  return out;
+}
+let ch = { seed: TODAY, items: [], i: 0, results: [], practice: false };
+/* Verbos para repasar hoy: los que el sistema de repetición espaciada marca como pendientes (máx. 3), fijados para todo el día */
+function todayReview() {
+  if (!prog.today || prog.today.date !== TODAY) {
+    const s = prog.srs || {};
+    const due = Object.keys(s).filter(k => s[k].due <= TODAY).sort((a, b) => s[a].due.localeCompare(s[b].due) || s[a].box - s[b].box).slice(0, 3);
+    prog.today = { date: TODAY, review: due };
+    store.set("ved.progress", prog);
+  }
+  return prog.today.review;
+}
+function startChallenge(practice) {
+  ch = { seed: practice ? TODAY + ":" + Math.random() : TODAY, items: [], i: 0, results: [], practice };
+  ch.items = buildSet(ch.seed, practice ? [] : todayReview());
+  renderChallenge();
+}
+function conjTable(v) {
+  const rows = [["ik", v.pres[0]], ["jij", v.pres[1]], ["hij/zij", v.pres[2]], ["wij/jullie/zij", v.pres[3]],
+    ["pasado sg.", v.past[0]], ["pasado pl.", v.past[1]],
+    ["perfectum", v.aux.split("").map(a => AUXF[a].ik).join("/") + " " + v.part]];
+  return `<div class="conj">${rows.map(([a, b]) => `<div><span>${a}</span><span>${esc(b)}</span></div>`).join("")}</div>`;
+}
+function renderChallenge() {
+  const el = document.getElementById("challenge");
+  const doneToday = prog.history[TODAY] != null && !ch.practice && ch.results.length === 0;
+  if (doneToday) {
+    el.innerHTML = `<div style="display:flex;flex-direction:column;gap:14px">
+      <p class="eyebrow">Reto de hoy completado</p>
+      <h2>${prog.history[TODAY]} / 5 correctas</h2>
+      <p class="muted">Vuelve mañana para mantener la racha de ${prog.streak} ${prog.streak === 1 ? "día" : "días"}. Mientras tanto puedes practicar con verbos al azar.</p>
+      <div class="row"><button class="btn primary" id="btn-practice">Practicar 5 verbos más</button><button class="btn" id="btn-redo">Repetir el de hoy</button></div></div>`;
+    el.querySelector("#btn-practice").onclick = () => startChallenge(true);
+    el.querySelector("#btn-redo").onclick = () => { ch.redo = true; ch.items = buildSet(TODAY, todayReview()); ch.i = 0; ch.results = []; ch.practice = true; renderChallenge(); };
+    return;
+  }
+  if (ch.i >= ch.items.length) return renderSummary();
+  const it = ch.items[ch.i];
+  const bar = ch.items.map((_, k) => `<i class="${k < ch.results.length ? (ch.results[k] ? "ok" : "ko") : k === ch.i ? "now" : ""}"></i>`).join("");
+  el.innerHTML = `<div style="display:flex;flex-direction:column;gap:16px" class="pop">
+    <div class="row" style="justify-content:space-between"><span class="eyebrow">${ch.practice ? "Práctica libre" : "Reto del día"} · verbo ${ch.i + 1} de 5</span><span class="row" style="gap:6px">${it.review ? '<span class="tag">Repaso</span>' : ""}${it.v.vl ? '<span class="tag">Vlaams</span>' : ""}</span></div>
+    <div class="progress">${bar}</div>
+    ${it.type === "mean" ? "" : `<div class="row"><span class="q-verb">${esc(it.v.inf)}</span>${speakBtn(it.v.inf)}</div><p class="muted">${esc(it.v.es)}</p>`}
+    <p class="q-prompt">${it.prompt}</p>
+    <p class="hint">${it.hint}</p>
+    <form class="answer-row" id="ans-form" autocomplete="off">
+      <input type="text" id="ans" aria-label="Tu respuesta" autocapitalize="off" spellcheck="false">
+      <button class="btn primary" type="submit">Comprobar</button>
+    </form>
+    <div id="fb"></div></div>`;
+  const input = el.querySelector("#ans");
+  input.focus({ preventScroll: true });
+  el.querySelector("#ans-form").addEventListener("submit", e => {
+    e.preventDefault();
+    if (el.querySelector("#btn-next")) return el.querySelector("#btn-next").click();
+    const val = norm(input.value);
+    if (!val) return;
+    const ok = it.answers.some(a => norm(a) === val);
+    ch.results.push(ok);
+    srsUpdate(it.v.inf, ok);
+    input.disabled = true;
+    el.querySelectorAll(".progress i")[ch.i].className = ok ? "ok" : "ko";
+    el.querySelector("#fb").innerHTML = `<div class="feedback ${ok ? "ok" : "ko"} pop">
+      <b>${ok ? "Goed zo! Correcto." : "Bijna… La respuesta era: " + esc(it.answers.join(" / "))}</b>
+      <p class="example">${esc(it.v.ex)} ${speakBtn(it.v.ex)}</p>
+      ${conjTable(it.v)}
+      <div class="row" style="justify-content:flex-end"><button class="btn primary" type="button" id="btn-next">${ch.i < 4 ? "Siguiente" : "Ver resultado"}</button></div></div>`;
+    const next = el.querySelector("#btn-next");
+    next.onclick = () => { ch.i++; renderChallenge(); };
+    next.focus({ preventScroll: true });
+  });
+}
+function renderSummary() {
+  const el = document.getElementById("challenge");
+  const score = ch.results.filter(Boolean).length;
+  if (!ch.practice) {
+    if (prog.lastDone !== TODAY) {
+      prog.streak = prog.lastDone === yesterday ? prog.streak + 1 : 1;
+      prog.best = Math.max(prog.best, prog.streak);
+      prog.lastDone = TODAY;
+    }
+    prog.history[TODAY] = score;
+    store.set("ved.progress", prog);
+    renderStats();
+    logPractice("verbs");
+  }
+  const msg = score === 5 ? "Perfect! Chapeau." : score >= 3 ? "Goed bezig! Vas bien." : "Niet erg, mañana más.";
+  el.innerHTML = `<div style="display:flex;flex-direction:column;gap:14px" class="pop">
+    <p class="eyebrow">${ch.practice ? "Práctica terminada" : "Reto completado"}</p>
+    <h2>${score} / 5 · ${msg}</h2>
+    ${ch.practice ? "" : `<p class="muted">Racha actual: <b>${prog.streak}</b> ${prog.streak === 1 ? "día" : "días"}.</p>`}
+    <div>${ch.items.map((it, k) => `<p>${ch.results[k] ? "✓" : "✗"} <b>${esc(it.v.inf)}</b> <span class="muted">— ${esc(it.answers[0])}</span></p>`).join("")}</div>
+    <div class="row"><button class="btn primary" id="btn-practice">Practicar 5 más</button></div></div>`;
+  el.querySelector("#btn-practice").onclick = () => startChallenge(true);
+}
+startChallenge(false);
+
+/* ---------- Lista de verbos */
+document.getElementById("verb-count").textContent = VERBS.length + " verbos";
+function renderVerbs(q = "") {
+  const nq = norm(q);
+  const list = VERBS.filter(v => !nq || norm(v.inf + " " + v.es + (v.vl ? " flamenco vlaams" : "")).includes(nq));
+  document.getElementById("verb-list").innerHTML = list.length ? list.map(v => `
+    <details class="verb-item"><summary><b>${esc(v.inf)} ${v.vl ? '<span class="tag">Vlaams</span>' : ""}</b><span class="muted">${esc(v.es)}</span></summary>
+    <div class="body">${conjTable(v)}<p class="example">${esc(v.ex)} ${speakBtn(v.ex)}</p></div></details>`).join("")
+    : `<p class="muted" style="padding:12px 2px">Ningún verbo coincide con «${esc(q)}».</p>`;
+}
+renderVerbs();
+document.getElementById("verb-search").addEventListener("input", e => renderVerbs(e.target.value));
+
+/* ---------- Periódicos */
+const PAPERS = [
+  ["Wablieft", "https://www.wablieft.be", "A2", "Noticias en neerlandés fácil. Ideal para empezar."],
+  ["VRT NWS", "https://www.vrt.be/vrtnws/nl/", "B1", "Radio-televisión pública flamenca. Textos claros."],
+  ["Het Nieuwsblad", "https://www.nieuwsblad.be", "B1", "Diario popular: actualidad, sucesos, deporte."],
+  ["Het Laatste Nieuws", "https://www.hln.be", "B1", "El diario más leído de Flandes."],
+  ["Gazet van Antwerpen", "https://www.gva.be", "B1", "Noticias de Amberes y su provincia."],
+  ["Het Belang van Limburg", "https://www.hbvl.be", "B1", "Noticias regionales de Limburgo."],
+  ["Bruzz", "https://www.bruzz.be", "B1", "Bruselas en neerlandés: ciudad y cultura."],
+  ["De Standaard", "https://www.standaard.be", "B2", "Diario de referencia, análisis y opinión."],
+  ["De Morgen", "https://www.demorgen.be", "B2", "Diario progresista, reportajes largos."],
+  ["De Tijd", "https://www.tijd.be", "C1", "Economía y finanzas. Vocabulario avanzado."]
+];
+document.getElementById("papers").innerHTML = PAPERS.map(([n, u, l, d]) =>
+  `<a class="paper" href="${u}" target="_blank" rel="noopener"><span class="name">${n}</span><span class="muted" style="font-size:.88rem">${d}</span>
+   <span class="meta"><span>${u.replace(/^https:\/\/(www\.)?/, "").replace(/\/$/, "")} ↗</span><span class="lvl">${l}</span></span></a>`).join("");
+
+const article = document.getElementById("article");
+article.placeholder = "Pega aquí el texto de un artículo…";
+const SAMPLE_TEXT = "Ejemplo de práctica (no es una noticia real):\n\nIn Gent gaan vanaf maandag meer trams rijden. De stad wil dat minder mensen met de auto naar het centrum komen. \"We hopen dat de mensen vaker de tram nemen\", zegt de schepen van mobiliteit. Volgens De Lijn zijn de nieuwe trams ook stiller en comfortabeler. Wie een abonnement heeft, moet niets extra betalen.";
+article.value = store.get("ved.article", SAMPLE_TEXT);
+article.addEventListener("input", () => store.set("ved.article", article.value));
+document.getElementById("read-level").value = store.get("ved.readlvl", prog.level && prog.level !== "<A1" ? prog.level.slice(0, 2) : "A2");
+document.getElementById("read-level").addEventListener("change", e => store.set("ved.readlvl", e.target.value));
+
+const btnSpeak = document.getElementById("btn-speak"), btnStop = document.getElementById("btn-stop");
+if (!hasTTS) btnSpeak.hidden = true;
+btnSpeak.onclick = () => {
+  const t = article.value.replace(/^Ejemplo de práctica.*\n+/i, "").trim();
+  if (!t) return;
+  btnStop.hidden = false;
+  speak(t, () => { btnStop.hidden = true; });
+};
+btnStop.onclick = () => { if (hasTTS) speechSynthesis.cancel(); btnStop.hidden = true; };
+
+const ERR = {
+  not_granted: "No se ha dado permiso para usar Claude en esta página.",
+  sampling_disabled: "Claude no está disponible para esta cuenta.",
+  rate_limited: "Demasiadas peticiones seguidas. Espera un momento y vuelve a probar.",
+  session_expired: "Tu sesión ha caducado. Vuelve a iniciar sesión en Claude.",
+  prompt_too_large: "El texto es demasiado largo. Pega solo una parte del artículo.",
+  refused: "Claude no ha podido trabajar con este texto. Prueba con otro artículo.",
+  invalid_json: "La respuesta llegó incompleta. Pulsa de nuevo para reintentar."
+};
+const HIDE = ["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed"];
+
+let sample = null;
+(async () => {
+  try { sample = window.claude && await window.claude.use("sample"); } catch { sample = null; }
+  if (!sample) return;
+  document.getElementById("btn-analyze").hidden = false;
+  document.getElementById("sample-tag").hidden = false;
+  document.getElementById("btn-gen-test")?.removeAttribute("hidden");
+})();
+
+document.getElementById("btn-analyze").onclick = async () => {
+  const text = article.value.replace(/^Ejemplo de práctica.*\n+/i, "").trim().slice(0, 6000);
+  const status = document.getElementById("analyze-status"), out = document.getElementById("analysis");
+  const btn = document.getElementById("btn-analyze");
+  if (!text) { status.textContent = "Pega primero un artículo."; return; }
+  const lvl = document.getElementById("read-level").value;
+  btn.disabled = true; status.textContent = "Leyendo el artículo…"; out.innerHTML = "";
+  const prompt = `Eres profesor de neerlandés de Bélgica (Vlaams/Belgisch-Nederlands) para un hispanohablante de nivel ${lvl} (MCER).
+Analiza este texto de un periódico flamenco. Responde SOLO con un objeto JSON con esta forma:
+{"titel":"título corto en neerlandés","samenvatting":"resumen en neerlandés sencillo adaptado al nivel ${lvl}, 3-5 frases","resumen":"resumen en español, 2-3 frases","woorden":[{"nl":"palabra o expresión","es":"traducción"}],"werkwoorden":[{"vorm":"forma en el texto","infinitief":"infinitivo","es":"significado","tijd":"tiempo verbal"}],"vlaams":"nota breve en español sobre palabras o usos típicos de Bélgica en el texto, o cadena vacía","vragen":[{"vraag":"pregunta de comprensión en neerlandés","antwoord":"respuesta corta en neerlandés"}]}
+Incluye 8-12 "woorden" útiles para el nivel ${lvl}, 4-6 "werkwoorden" y 4 "vragen".
+
+TEXTO:
+${text}`;
+  try {
+    const r = await sample.json(prompt, { cache: { gcTime: 3600000 } });
+    status.textContent = "";
+    const list = (a) => Array.isArray(a) ? a : [];
+    out.innerHTML = `
+      <div><p class="eyebrow">Resumen fácil · ${lvl}</p><h3>${esc(r.titel || "")}</h3></div>
+      <p>${esc(r.samenvatting || "")} ${speakBtn(r.samenvatting || "", "▶ Escuchar")}</p>
+      <p class="muted">${esc(r.resumen || "")}</p>
+      <div><p class="eyebrow" style="margin-bottom:6px">Vocabulario</p><div class="vocab">${list(r.woorden).map(w => `<span>${esc(w.nl)}</span><span>${esc(w.es)}</span>`).join("")}</div></div>
+      <div><p class="eyebrow" style="margin-bottom:6px">Verbos del artículo</p><ul>${list(r.werkwoorden).map(w => `<li><b>${esc(w.vorm)}</b> → ${esc(w.infinitief)} <span class="muted">(${esc(w.tijd)}) · ${esc(w.es)}</span></li>`).join("")}</ul></div>
+      ${r.vlaams ? `<div class="feedback ok" style="background:var(--soft)"><span class="eyebrow">Toque flamenco</span><p>${esc(r.vlaams)}</p></div>` : ""}
+      <div class="qa"><p class="eyebrow" style="margin-bottom:6px">Preguntas de comprensión</p>${list(r.vragen).map(q => `<details><summary>${esc(q.vraag)}</summary><p class="muted">${esc(q.antwoord)}</p></details>`).join("")}</div>`;
+  } catch (e) {
+    status.textContent = ERR[e && e.code] || "No se pudo completar el análisis. Inténtalo de nuevo.";
+    if (e && HIDE.includes(e.code)) btn.hidden = true;
+  } finally { btn.disabled = false; }
+};
+
+/* ---------- Vandaag in Limburg (textos de práctica propios, basados en titulares de hbvl.be) */
+const NEWS_DATE = "zondag 18 oktober 2026";
+const NEWS = [
+  { id: "aardbeving", lvl: "A2", nl: "Kleine aardbeving in Genk", es: "Pequeño terremoto en Genk",
+    url: "https://www.hbvl.be/regio/limburg/genk/genk-getroffen-door-aardbeving-met-een-kracht-van-21-niet-normaal-alles-bewoog/163224345.html",
+    s: [["In Genk was er een kleine aardbeving.", "En Genk hubo un pequeño terremoto."],
+        ["De aardbeving had een kracht van 2,1.", "El terremoto tuvo una fuerza de 2,1."],
+        ["Veel mensen in de stad hebben het gevoeld.", "Mucha gente en la ciudad lo sintió."],
+        ["Een inwoner zegt: alles bewoog.", "Un vecino dice: todo se movía."],
+        ["Sommige mensen hoorden ook een luide knal.", "Algunas personas también oyeron un fuerte estallido."],
+        ["In een café liepen de klanten snel naar buiten.", "En un bar, los clientes salieron rápido a la calle."]],
+    w: [["de aardbeving", "el terremoto"], ["de kracht", "la fuerza"], ["voelen (gevoeld)", "sentir"], ["bewegen (bewoog)", "moverse"], ["de knal", "el estallido"], ["naar buiten lopen", "salir afuera"]],
+    q: [["Waar was de aardbeving?", "In Genk."], ["Hoe sterk was de aardbeving?", "Ze had een kracht van 2,1."], ["Wat deden de klanten in het café?", "Ze liepen snel naar buiten."]] },
+  { id: "jenever", lvl: "A2", nl: "145.000 bezoekers op de Jeneverfeesten", es: "145.000 visitantes en las Fiestas de la Ginebra",
+    url: "https://www.hbvl.be/regio/limburg/hasselt/opvallende-verschillen-tussen-zaterdag-en-zondag-jeneverfeesten-trokken-145.000-bezoekers/163204673.html",
+    s: [["In Hasselt waren er dit weekend de Jeneverfeesten.", "Este fin de semana se celebraron en Hasselt las Fiestas de la Ginebra."],
+        ["Jenever is een sterke drank uit België en Nederland.", "La jenever es una bebida fuerte de Bélgica y los Países Bajos."],
+        ["Op het feest kun je veel soorten jenever proeven.", "En la fiesta puedes probar muchos tipos de jenever."],
+        ["In totaal kwamen er 145.000 bezoekers.", "En total vinieron 145.000 visitantes."],
+        ["Zaterdag en zondag waren wel heel verschillend.", "Eso sí, el sábado y el domingo fueron muy distintos."]],
+    w: [["het feest", "la fiesta"], ["de drank", "la bebida"], ["proeven", "probar (sabor)"], ["de bezoeker", "el visitante"], ["verschillend", "distinto"]],
+    q: [["In welke stad zijn de Jeneverfeesten?", "In Hasselt."], ["Hoeveel bezoekers kwamen er?", "Er kwamen 145.000 bezoekers."], ["Wat is jenever?", "Een sterke drank."]] },
+  { id: "pizza", lvl: "A2", nl: "De beste pizzabakker van Europa", es: "El mejor pizzero de Europa",
+    url: "https://www.hbvl.be/video/michele-34-uit-houthalen-helchteren-is-de-beste-pizzabakker-van-europa/163171492.html",
+    s: [["Michele is 34 jaar oud.", "Michele tiene 34 años."],
+        ["Hij komt uit Houthalen-Helchteren, in Limburg.", "Es de Houthalen-Helchteren, en Limburgo."],
+        ["Michele bakt elke dag pizza's.", "Michele hace pizzas cada día."],
+        ["Nu is hij de beste pizzabakker van Europa.", "Ahora es el mejor pizzero de Europa."],
+        ["Dat is een mooie titel voor een Limburger.", "Es un buen título para alguien de Limburgo."]],
+    w: [["bakken", "hornear, hacer (pan, pizza)"], ["de pizzabakker", "el pizzero"], ["uit … komen", "ser de …"], ["de titel", "el título"]],
+    q: [["Hoe oud is Michele?", "Hij is 34 jaar oud."], ["Waar komt hij vandaan?", "Uit Houthalen-Helchteren."], ["Wat is Michele nu?", "De beste pizzabakker van Europa."]] },
+  { id: "everzwijnen", lvl: "B1", nl: "Everzwijnen woelen tuin om in Tongeren", es: "Jabalíes revuelven un jardín en Tongeren",
+    url: "https://www.hbvl.be/regio/limburg/tongeren-borgloon/everzwijnen-woelen-tuin-om-in-tongeren-het-moet-een-leger-geweest-zijn/163238354.html",
+    s: [["In Tongeren hebben everzwijnen een tuin helemaal omgewoeld.", "En Tongeren, unos jabalíes revolvieron un jardín por completo."],
+        ["Everzwijnen zoeken met hun snuit naar eten in de grond.", "Los jabalíes buscan comida en la tierra con el hocico."],
+        ["Volgens de bewoners moet het een leger geweest zijn.", "Según los vecinos, debió de ser un ejército."],
+        ["Wie zo'n tuin 's ochtends ziet, schrikt wel even.", "Quien ve un jardín así por la mañana se lleva un buen susto."],
+        ["In de Limburgse bossen leven er everzwijnen.", "En los bosques de Limburgo viven jabalíes."]],
+    w: [["het everzwijn", "el jabalí"], ["omwoelen (omgewoeld)", "revolver, remover la tierra"], ["de snuit", "el hocico"], ["de bewoner", "el vecino, el residente"], ["het leger", "el ejército"], ["schrikken", "asustarse"]],
+    q: [["Wat hebben de everzwijnen gedaan?", "Ze hebben een tuin omgewoeld."], ["Waarmee zoeken everzwijnen eten?", "Met hun snuit."], ["Wat zeggen de bewoners?", "Dat het een leger geweest moet zijn."]] },
+  { id: "zandprinter", lvl: "B1", nl: "De eerste zandprinter van België staat in Hasselt", es: "La primera impresora de arena de Bélgica está en Hasselt",
+    url: "https://www.hbvl.be/economie/de-eerste-zandprinter-van-het-land-staat-in-hasselt-maar-waar-wordt-die-voor-gebruikt/162991332.html",
+    s: [["In Hasselt staat de eerste zandprinter van het land.", "En Hasselt está la primera impresora de arena del país."],
+        ["Een zandprinter werkt zoals een 3D-printer, maar hij gebruikt zand.", "Funciona como una impresora 3D, pero usa arena."],
+        ["Laag na laag ontstaat er een vorm.", "Capa a capa va surgiendo una forma."],
+        ["Zulke vormen worden vaak gebruikt om metalen onderdelen te gieten.", "Esas formas se usan a menudo para fundir piezas de metal."],
+        ["De krant legt uit waarvoor de machine in Hasselt dient.", "El periódico explica para qué sirve la máquina de Hasselt."]],
+    w: [["het zand", "la arena"], ["de laag", "la capa"], ["ontstaan", "surgir, formarse"], ["het onderdeel", "la pieza"], ["gieten", "fundir, verter"], ["uitleggen", "explicar"]],
+    q: [["Waar staat de zandprinter?", "In Hasselt."], ["Wat gebruikt de printer?", "Zand."], ["Hoe ontstaat de vorm?", "Laag na laag."]] }
+];
+document.getElementById("news-date").textContent = `Noticias de hoy (${NEWS_DATE}), escritas en neerlandés fácil a partir de los titulares de HBVL. Elige una para leerla, escucharla, hacer un dictado y responder preguntas con corrección.`;
+document.getElementById("news-list").innerHTML = NEWS.map(n => `<button class="news-item" data-news="${n.id}"><span><b>${esc(n.nl)}</b><span class="muted" style="font-size:.9rem">${esc(n.es)}</span></span><span class="lvl">${n.lvl}</span></button>`).join("");
+let curNews = null, newsMode = "leer", playAll = null;
+document.getElementById("news-list").addEventListener("click", e => {
+  const b = e.target.closest("[data-news]"); if (!b) return;
+  openNews(b.dataset.news, true);
+});
+function stopAll() { playAll = null; if (hasTTS) speechSynthesis.cancel(); document.querySelectorAll(".sent.playing").forEach(x => x.classList.remove("playing")); }
+function openNews(id, scroll) {
+  stopAll();
+  curNews = NEWS.find(n => n.id === id) || NEWS[0];
+  document.querySelectorAll(".news-item").forEach(x => x.setAttribute("aria-current", String(x.dataset.news === curNews.id)));
+  store.set("ved.news", curNews.id);
+  renderNews();
+  const r = document.getElementById("news-reader"); r.hidden = false;
+  if (scroll) r.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function renderNews() {
+  const n = curNews, r = document.getElementById("news-reader");
+  const modes = [["leer", "Leer"], ["escuchar", "Escuchar"], ["pronunciar", "Pronunciar"], ["dictado", "Dictado"], ["preguntas", "Preguntas"]];
+  r.innerHTML = `<div class="row" style="justify-content:space-between;align-items:flex-start"><div><p class="eyebrow">${n.lvl} · Texto de práctica</p><h2>${esc(n.nl)}</h2><p class="muted">${esc(n.es)}</p></div>
+    <a class="btn small" href="${n.url}" target="_blank" rel="noopener">Artículo original ↗</a></div>
+    <div class="seg" role="group" aria-label="Modo de práctica">${modes.map(([k, l]) => `<button data-mode="${k}" aria-pressed="${newsMode === k}">${l}</button>`).join("")}</div>
+    <div id="news-body"></div>`;
+  r.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => { stopAll(); newsMode = b.dataset.mode; renderNews(); });
+  const body = r.querySelector("#news-body");
+  if (newsMode === "leer") renderRead(body, n);
+  else if (newsMode === "escuchar") renderListen(body, n);
+  else if (newsMode === "pronunciar") renderShadow(body, n);
+  else if (newsMode === "dictado") renderDictation(body, n);
+  else renderQuestions(body, n);
+}
+function renderRead(body, n) {
+  body.innerHTML = `<div style="display:flex;flex-direction:column;gap:14px">
+    <div class="row"><label class="row" style="gap:6px;font-size:.92rem"><input type="checkbox" id="show-tr"> Mostrar traducción</label></div>
+    <div>${n.s.map(([nl, es]) => `<div class="sent"><p>${esc(nl)}<span class="tr" hidden>${esc(es)}</span></p>${speakBtn(nl)}</div>`).join("")}</div>
+    <div><p class="eyebrow" style="margin-bottom:6px">Vocabulario</p><div class="vocab">${n.w.map(([a, b]) => `<span>${esc(a)}</span><span>${esc(b)}</span>`).join("")}</div></div></div>`;
+  body.querySelector("#show-tr").onchange = e => body.querySelectorAll(".tr").forEach(x => x.hidden = !e.target.checked);
+}
+function renderListen(body, n) {
+  body.innerHTML = hasTTS ? `<div style="display:flex;flex-direction:column;gap:14px">
+    <p class="muted">Escucha primero sin leer. Después pulsa «Mostrar texto» y vuelve a escuchar.</p>
+    <div class="row"><button class="btn primary" id="lis-play">▶ Escuchar todo</button><button class="btn" id="lis-slow">▶ Más despacio</button><button class="btn" id="lis-stop">■ Parar</button><button class="btn" id="lis-show">Mostrar texto</button></div>
+    <div id="lis-text" hidden>${n.s.map(([nl], k) => `<div class="sent" data-k="${k}"><p>${esc(nl)}</p></div>`).join("")}</div></div>`
+    : `<p class="muted">Tu navegador no tiene voces de síntesis. Prueba en Chrome o Edge, o en el móvil.</p>`;
+  if (!hasTTS) return;
+  const run = rate => {
+    stopAll(); const token = playAll = {}; let k = 0;
+    const next = () => {
+      if (playAll !== token) return;
+      body.querySelectorAll(".sent").forEach(x => x.classList.toggle("playing", +x.dataset.k === k));
+      if (k >= n.s.length) { playAll = null; return; }
+      speak(n.s[k][0], () => { k++; next(); }, rate);
+    };
+    next();
+  };
+  body.querySelector("#lis-play").onclick = () => { run(0.9); logPractice("listen"); };
+  body.querySelector("#lis-slow").onclick = () => run(0.6);
+  body.querySelector("#lis-stop").onclick = stopAll;
+  body.querySelector("#lis-show").onclick = e => { const t = body.querySelector("#lis-text"); t.hidden = !t.hidden; e.target.textContent = t.hidden ? "Mostrar texto" : "Ocultar texto"; };
+}
+const words = s => s.toLowerCase().replace(/[.,!?:;"“”«»()]/g, " ").split(/\s+/).filter(Boolean);
+function diffWords(target, typed) {
+  const a = words(target), b = words(typed), m = a.length, n = b.length;
+  const L = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  for (let i = m - 1; i >= 0; i--) for (let j = n - 1; j >= 0; j--) L[i][j] = a[i] === b[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+  const out = []; let i = 0, j = 0, errors = 0;
+  while (i < m || j < n) {
+    if (i < m && j < n && a[i] === b[j]) { out.push(`<span class="w-ok">${esc(a[i])}</span>`); i++; j++; }
+    else if (i < m && j < n && L[i + 1][j + 1] === L[i][j]) { out.push(`<span class="w-bad">${esc(b[j])}</span> <span class="w-fix">${esc(a[i])}</span>`); i++; j++; errors++; }
+    else if (j < n && (i >= m || L[i][j + 1] >= L[i + 1][j])) { out.push(`<span class="w-bad">${esc(b[j])}</span>`); j++; errors++; }
+    else { out.push(`<span class="w-miss">${esc(a[i])}</span>`); i++; errors++; }
+  }
+  return { html: out.join(" "), errors };
+}
+function renderDictation(body, n) {
+  body.innerHTML = `<div style="display:flex;flex-direction:column;gap:6px">
+    <p class="muted">Escucha cada frase y escríbela. Al corregir verás <span class="diff"><span class="w-ok">en verde</span></span> lo correcto, <span class="diff"><span class="w-bad">tachado</span></span> lo que sobra o está mal y <span class="diff"><span class="w-miss">subrayado</span></span> lo que falta.</p>
+    ${hasTTS ? "" : `<p class="status">Tu navegador no tiene voces de síntesis, así que el dictado no puede sonar aquí.</p>`}
+    ${n.s.map(([nl], k) => `<form class="dict-row" data-k="${k}" autocomplete="off">
+      <div class="row"><span class="eyebrow">Frase ${k + 1}</span>${hasTTS ? `<button type="button" class="btn small" data-play="${k}">▶</button><button type="button" class="btn small" data-slow="${k}">▶ lento</button>` : ""}</div>
+      <div class="answer-row"><input type="text" id="dict-${n.id}-${k}" aria-label="Frase ${k + 1}" spellcheck="false" autocapitalize="off"><button class="btn primary" type="submit">Corregir</button></div>
+      <div class="dict-out"></div></form>`).join("")}
+    <p class="status" id="dict-score"></p></div>`;
+  const done = {};
+  body.addEventListener("click", e => {
+    const p = e.target.closest("[data-play]"), s = e.target.closest("[data-slow]");
+    if (p) speak(n.s[+p.dataset.play][0]); if (s) speak(n.s[+s.dataset.slow][0], null, 0.55);
+  });
+  body.querySelectorAll("form.dict-row").forEach(f => f.addEventListener("submit", e => {
+    e.preventDefault();
+    const k = +f.dataset.k, val = f.querySelector("input").value.trim(); if (!val) return;
+    const d = diffWords(n.s[k][0], val); done[k] = d.errors === 0;
+    logPractice("write");
+    f.querySelector(".dict-out").innerHTML = `<div class="feedback ${d.errors ? "ko" : "ok"} pop"><b>${d.errors ? d.errors + (d.errors === 1 ? " error" : " errores") : "Perfect!"}</b><p class="diff">${d.html}</p>${d.errors ? `<p class="muted" style="font-size:.9rem">Correcto: ${esc(n.s[k][0])}</p>` : ""}</div>`;
+    const tot = Object.keys(done).length, ok = Object.values(done).filter(Boolean).length;
+    body.querySelector("#dict-score").textContent = `${ok} de ${tot} frases sin errores (${n.s.length} en total).`;
+  }));
+}
+function renderQuestions(body, n) {
+  body.innerHTML = `<div style="display:flex;flex-direction:column;gap:6px">
+    <p class="muted">Responde en neerlandés con una frase corta. ${sample ? "Claude corrige tu respuesta y te explica los errores en español." : "Al comprobar verás una respuesta modelo para comparar."}</p>
+    ${n.q.map(([q], k) => `<form class="dict-row" data-k="${k}" autocomplete="off">
+      <div class="row"><b>${esc(q)}</b>${speakBtn(q)}</div>
+      <div class="answer-row"><input type="text" id="q-${n.id}-${k}" aria-label="${esc(q)}"><button class="btn primary" type="submit">Corregir</button></div>
+      <div class="q-out"></div></form>`).join("")}</div>`;
+  body.querySelectorAll("form.dict-row").forEach(f => f.addEventListener("submit", async e => {
+    e.preventDefault();
+    const k = +f.dataset.k, [q, model] = n.q[k], val = f.querySelector("input").value.trim(), out = f.querySelector(".q-out"), btn = f.querySelector("button[type=submit]");
+    if (!val) return;
+    logPractice("write");
+    const local = () => {
+      const key = words(model).filter(w => w.length > 3 || /\d/.test(w));
+      const hit = key.length ? key.filter(w => words(val).includes(w)).length / key.length : 0;
+      out.innerHTML = `<div class="feedback ${hit >= .5 ? "ok" : "ko"} pop"><b>${hit >= .5 ? "Parece correcto." : "Revisa tu respuesta."}</b><p>Respuesta modelo: <i>${esc(model)}</i> ${speakBtn(model)}</p></div>`;
+    };
+    if (!sample) return local();
+    btn.disabled = true; out.innerHTML = `<p class="status">Corrigiendo…</p>`;
+    const lvl = document.getElementById("read-level").value;
+    const prompt = `Eres profesor de neerlandés de Bélgica para un hispanohablante de nivel ${lvl}. Corrige la respuesta del alumno a una pregunta de comprensión.
+TEXTO: ${n.s.map(x => x[0]).join(" ")}
+PREGUNTA: ${q}
+RESPUESTA MODELO: ${model}
+RESPUESTA DEL ALUMNO: ${val}
+Responde SOLO con JSON: {"inhoud_juist":true|false (¿el contenido responde bien a la pregunta?),"verbeterd":"la respuesta del alumno corregida en neerlandés correcto, cambiando lo mínimo","fouten":["cada error de gramática u ortografía explicado en español en una frase corta"],"tip":"un consejo breve en español"}`;
+    try {
+      const r = await sample.json(prompt, { modelTier: "quick" });
+      const fouten = Array.isArray(r.fouten) ? r.fouten : [];
+      const ok = r.inhoud_juist && !fouten.length;
+      out.innerHTML = `<div class="feedback ${ok ? "ok" : "ko"} pop">
+        <b>${r.inhoud_juist ? (fouten.length ? "Contenido correcto, pero hay errores de lengua." : "Goed zo! Todo correcto.") : "El contenido no responde bien a la pregunta."}</b>
+        ${r.verbeterd && norm(r.verbeterd) !== norm(val) ? `<p class="diff">${diffWords(r.verbeterd, val).html}</p><p>Corregida: <i>${esc(r.verbeterd)}</i> ${speakBtn(r.verbeterd)}</p>` : ""}
+        ${fouten.length ? `<ul>${fouten.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+        ${r.tip ? `<p class="muted" style="font-size:.9rem">${esc(r.tip)}</p>` : ""}
+        <p class="muted" style="font-size:.9rem">Respuesta modelo: ${esc(model)}</p></div>`;
+    } catch (err) {
+      if (err && HIDE.includes(err.code)) { sample = null; local(); }
+      else out.innerHTML = `<p class="status">${ERR[err && err.code] || "No se pudo corregir. Inténtalo de nuevo."}</p>`;
+    } finally { btn.disabled = false; }
+  }));
+}
+/* ---------- Micrófono y pronunciación (Web Speech API, gratis en Chrome y Edge) */
+const SRClass = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+const IN_VIEWER = !!window.claude;
+const LOCAL_PATH = "C:\\Users\\Jorge\\Downloads\\vlaams-elke-dag\\vlaams-elke-dag.html";
+let micBlocked = false;
+const recordings = new WeakMap();
+let activeRec = null;
+function micBannerHTML() {
+  if (!SRClass) return `<b>Tu navegador no tiene reconocimiento de voz.</b><span>Abre la app en <b>Google Chrome</b> o <b>Microsoft Edge</b> para usar el micrófono. Puedes seguir escuchando los modelos y entrenar el oído.</span>`;
+  if (IN_VIEWER) return `<b>El micrófono no está permitido en esta vista.</b><span>Para practicar hablando, abre tu versión web del móvil o la versión local en Chrome o Edge. La ruta local es:</span><code>${esc(LOCAL_PATH)}</code><span class="muted" style="font-size:.88rem">Escuchar, los pares mínimos y el resto de la app funcionan también aquí.</span>`;
+  if (micBlocked) return `<b>El micrófono está bloqueado para esta página.</b><span>Toca el candado o el icono de ajustes junto a la dirección, permite el micrófono y recarga la página. En iPhone: Ajustes › Safari › Micrófono.</span>`;
+  return "";
+}
+function refreshMicBanner() { const b = document.getElementById("mic-banner"); if (b) b.innerHTML = micBannerHTML(); }
+function pronHTML(text, tr) {
+  return `<div class="pron" data-text="${esc(text)}">
+    <p class="ptext">${esc(text)}${tr ? `<span class="ptr" style="display:block">${esc(tr)}</span>` : ""}</p>
+    <div class="row">${hasTTS ? `<button class="btn small" data-act="slow">▶ Lento</button><button class="btn small" data-act="play">▶ Normal</button>` : ""}
+      ${SRClass ? `<button class="btn small mic" data-act="mic">● Hablar</button>` : ""}
+      <button class="btn small" data-act="me" hidden>▶ Mi voz</button></div>
+    <div class="pron-out"></div></div>`;
+}
+function listenOnce(onStart) {
+  return new Promise((resolve, reject) => {
+    const r = new SRClass();
+    r.lang = "nl-BE"; r.interimResults = false; r.maxAlternatives = 3; r.continuous = false;
+    let got = null;
+    r.onstart = onStart;
+    r.onresult = e => { got = [...e.results[0]].map(a => a.transcript); };
+    r.onerror = e => reject(e.error || "error");
+    r.onend = () => got ? resolve(got) : reject("no-speech");
+    activeRec = r;
+    try { r.start(); } catch (err) { reject("start"); }
+  });
+}
+async function startRecorder() {
+  try {
+    if (!navigator.mediaDevices || !window.MediaRecorder) return null;
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mr = new MediaRecorder(stream), chunks = [];
+    mr.ondataavailable = e => e.data.size && chunks.push(e.data);
+    const done = new Promise(res => mr.onstop = () => { stream.getTracks().forEach(t => t.stop()); res(chunks.length ? URL.createObjectURL(new Blob(chunks, { type: mr.mimeType })) : null); });
+    mr.start();
+    return { stop: () => { if (mr.state !== "inactive") mr.stop(); return done; } };
+  } catch { return null; }
+}
+const MIC_ERR = {
+  "no-speech": "No te he oído. Pulsa «Hablar» y di la frase en cuanto el botón se ponga rojo.",
+  "audio-capture": "No encuentro ningún micrófono. Revisa que esté conectado.",
+  "network": "El reconocimiento de voz necesita conexión a internet.",
+  "language-not-supported": "Este navegador no reconoce neerlandés. Prueba con Chrome."
+};
+async function runMic(box) {
+  const text = box.dataset.text, out = box.querySelector(".pron-out"), btn = box.querySelector('[data-act="mic"]');
+  if (activeRec) { try { activeRec.stop(); } catch {} return; }
+  stopAudio();
+  out.innerHTML = `<p class="status">Preparando el micrófono…</p>`;
+  const rec = await startRecorder();
+  try {
+    const alts = await listenOnce(() => { btn.classList.add("rec"); btn.textContent = "■ Parar"; out.innerHTML = `<p class="status">Te escucho… di la frase.</p>`; });
+    const target = words(text).length || 1;
+    let best = null;
+    for (const a of alts) { const d = diffWords(text, a); const sc = Math.max(0, Math.round(100 * (target - Math.min(d.errors, target)) / target)); if (!best || sc > best.sc) best = { a, d, sc }; }
+    const msg = best.sc >= 90 ? "Uitstekend! Se te entiende perfectamente." : best.sc >= 70 ? "Goed! Casi todo se entiende." : best.sc >= 40 ? "Bijna. Escucha la versión lenta y repite." : "Probeer nog eens. Escucha la frase y repítela por partes.";
+    out.innerHTML = `<div class="feedback ${best.sc >= 70 ? "ok" : "ko"} pop"><div class="row"><span class="score">${best.sc}%</span><b>${msg}</b></div>
+      <p class="muted" style="font-size:.9rem">He entendido: «${esc(best.a)}»</p><p class="diff">${best.d.html}</p>
+      ${best.sc < 100 ? `<p class="muted" style="font-size:.88rem">Las palabras subrayadas o tachadas son las que no se han reconocido bien. Practícalas solas.</p>` : ""}</div>`;
+    logPractice("pron");
+  } catch (code) {
+    if (code === "not-allowed" || code === "service-not-allowed") { micBlocked = true; refreshMicBanner(); out.innerHTML = `<p class="status">El micrófono está bloqueado aquí. Mira el aviso de arriba en la pestaña Pronunciación.</p>`; }
+    else if (code !== "aborted") out.innerHTML = `<p class="status">${MIC_ERR[code] || "No se pudo usar el micrófono. Inténtalo otra vez."}</p>`;
+    else out.innerHTML = "";
+  } finally {
+    activeRec = null; btn.classList.remove("rec"); btn.textContent = "● Hablar";
+    if (rec) { const url = await rec.stop(); if (url) { const old = recordings.get(box); if (old) URL.revokeObjectURL(old); recordings.set(box, url); box.querySelector('[data-act="me"]').hidden = false; } }
+  }
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest(".pron [data-act]"); if (!b) return;
+  const box = b.closest(".pron"), act = b.dataset.act;
+  if (act === "play") speak(box.dataset.text);
+  else if (act === "slow") speak(box.dataset.text, null, 0.55);
+  else if (act === "mic") runMic(box);
+  else if (act === "me") { const url = recordings.get(box); if (url) { stopAudio(); new Audio(url).play().catch(() => {}); } }
+});
+
+/* Modo «Pronunciar» y radio de noticias */
+function renderShadow(body, n) {
+  body.innerHTML = `<div style="display:flex;flex-direction:column;gap:4px">
+    <p class="muted">Repite cada frase después del modelo. Primero lenta, después normal. ${SRClass && !IN_VIEWER && !micBlocked ? "Pulsa «Hablar» para que el micrófono compruebe si se te entiende." : ""}</p>
+    ${SRClass && (IN_VIEWER || micBlocked) ? `<div class="mic-banner">${micBannerHTML()}</div>` : ""}
+    ${!SRClass ? `<div class="mic-banner">${micBannerHTML()}</div>` : ""}
+    ${n.s.map(([nl, es]) => pronHTML(nl, es)).join("")}</div>`;
+}
+let radioToken = null;
+window.__stopPlayers = () => { radioToken = null; playAll = null; const st = document.getElementById("radio-status"); if (st) st.textContent = ""; const b = document.getElementById("btn-radio"); if (b) b.textContent = "▶ Escuchar las noticias de hoy"; document.querySelectorAll(".sent.playing").forEach(x => x.classList.remove("playing")); };
+function radio() {
+  const btn = document.getElementById("btn-radio"), st = document.getElementById("radio-status");
+  if (radioToken) { stopAudio(); return; }
+  stopAudio();
+  const queue = [[`Het nieuws van ${NEWS_DATE}.`, ""]];
+  NEWS.forEach((n, k) => { queue.push([`Bericht ${k + 1}. ${n.nl}.`, n.nl]); n.s.forEach(([s]) => queue.push([s, n.nl])); });
+  const token = radioToken = {}; let i = 0;
+  btn.textContent = "■ Parar";
+  const next = () => {
+    if (radioToken !== token) return;
+    if (i >= queue.length) { window.__stopPlayers(); logPractice("listen"); return; }
+    const [txt, label] = queue[i++];
+    if (label) st.textContent = "Ahora: " + label;
+    speak(txt, () => setTimeout(next, 350), 0.88);
+  };
+  next();
+}
+
+{ const saved = store.get("ved.news", null); if (saved && NEWS.some(x => x.id === saved)) openNews(saved, false); }
+
+const btnRadio = document.getElementById("btn-radio");
+if (!hasTTS) btnRadio.hidden = true; else btnRadio.onclick = radio;
+
+/* Pestaña Pronunciación */
+const PHRASES = [
+  ["Goeiemorgen, alles goed?", "Buenos días, ¿todo bien?"],
+  ["Amai, dat is schoon!", "¡Vaya, qué bonito!"],
+  ["Allez, tot straks!", "¡Venga, hasta luego!"],
+  ["Hebt ge goesting in een frietje?", "¿Te apetecen unas patatas fritas?"],
+  ["Een pintje, alstublieft.", "Una cerveza, por favor."],
+  ["Kan ik met Bancontact betalen?", "¿Puedo pagar con Bancontact?"],
+  ["Waar is het station van Hasselt?", "¿Dónde está la estación de Hasselt?"],
+  ["Ik versta het niet, kunt u dat herhalen?", "No lo entiendo, ¿puede repetirlo?"],
+  ["Ik woon al twee jaar in Limburg.", "Llevo dos años viviendo en Limburgo."],
+  ["Mag ik iets vragen?", "¿Puedo preguntar algo?"],
+  ["Het is vandaag schoon weer.", "Hoy hace buen tiempo."],
+  ["Ik spreek een beetje Nederlands.", "Hablo un poco de neerlandés."],
+  ...VERBS.map(v => [v.ex, ""])
+];
+function pickPhrases(seed) { const r = rng(seed), pool = PHRASES.slice(), out = []; while (out.length < 5 && pool.length) out.push(pool.splice(Math.floor(r() * pool.length), 1)[0]); return out; }
+function renderPhrases(seed) { document.getElementById("phrase-list").innerHTML = pickPhrases(seed).map(([nl, es]) => pronHTML(nl, es)).join(""); }
+renderPhrases("frases:" + TODAY);
+document.getElementById("btn-more-phrases").onclick = () => renderPhrases("frases:" + Math.random());
+refreshMicBanner();
+
+const PAIRS = [["man", "hombre", "maan", "luna"], ["zon", "sol", "zoon", "hijo"], ["bus", "autobús", "buis", "tubo"], ["pen", "bolígrafo", "pijn", "dolor"],
+  ["boek", "libro", "buik", "barriga"], ["deur", "puerta", "duur", "caro"], ["met", "con", "meet", "mide"], ["vol", "lleno", "vul", "llena (rellenar)"]];
+let pairState = { n: 0, ok: 0, cur: null };
+function newPair() {
+  const p = PAIRS[Math.floor(Math.random() * PAIRS.length)], which = Math.random() < .5 ? 0 : 2;
+  pairState.cur = { p, which };
+  const el = document.getElementById("pairs");
+  el.innerHTML = hasTTS ? `<div style="display:flex;flex-direction:column;gap:12px">
+    <div class="row"><button class="btn primary" id="pair-play">▶ Escuchar</button><span class="muted">Aciertos: <b>${pairState.ok}</b> de ${pairState.n}</span></div>
+    <div class="pair-opts"><button class="opt" data-w="0">${p[0]}<small>${p[1]}</small></button><button class="opt" data-w="2">${p[2]}<small>${p[3]}</small></button></div>
+    <div id="pair-fb"></div></div>` : `<p class="muted">Tu navegador no tiene voces de síntesis, así que este ejercicio no puede sonar aquí.</p>`;
+  if (!hasTTS) return;
+  el.querySelector("#pair-play").onclick = () => speak(p[which], null, 0.8);
+  el.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+    const ok = +b.dataset.w === which; pairState.n++; if (ok) pairState.ok++;
+    el.querySelectorAll(".opt").forEach(x => { x.disabled = true; if (+x.dataset.w === which) x.classList.add("ok"); else if (x === b) x.classList.add("ko"); });
+    el.querySelector("#pair-fb").innerHTML = `<div class="row" style="justify-content:space-between"><span>${ok ? "Correcto." : `Era <b>${p[which]}</b>.`} Escucha las dos: ${speakBtn(p[0], "▶ " + p[0])} ${speakBtn(p[2], "▶ " + p[2])}</span><button class="btn primary" id="pair-next">Siguiente</button></div>`;
+    el.querySelector("#pair-next").onclick = newPair;
+    logPractice("pron");
+  });
+}
+newPair();
+
+const SOUNDS = [
+  ["g / ch", "En Flandes es <b>suave</b>: como una «j» española muy ligera, hecha al fondo de la boca. No raspes como en Holanda.", ["goed", "gisteren", "Genk", "lachen"]],
+  ["ui", "No existe en español. Empieza con una «a» corta con los labios redondeados y termina hacia «ü».", ["huis", "buiten", "duizend", "Leuven"]],
+  ["eu", "Di «e» con los labios redondeados, como en francés «peu».", ["deur", "neus", "kleur", "Leuven"]],
+  ["ij / ei", "Suenan igual, entre «ei» y «ai». En Flandes, más cerca de «ei».", ["mijn", "pijn", "trein", "ijs"]],
+  ["oe", "Como la «u» española.", ["boek", "moe", "zoeken", "goed"]],
+  ["u / uu", "Como la «u» francesa: di «i» con los labios redondeados. La uu es más larga.", ["nu", "bus", "uur", "minuut"]],
+  ["aa ee oo", "Las vocales dobles son largas y cambian el significado: man/maan, zon/zoon.", ["maan", "been", "zoon", "straat"]],
+  ["sch", "Es «s» + g suave, nunca «sh».", ["school", "schoon", "schrijven", "Schelde"]],
+  ["w", "Entre «v» y «u»: acerca los labios sin morder el labio inferior.", ["water", "werken", "wonen", "Wablieft"]],
+  ["-en", "En el habla diaria la n final casi desaparece: eten suena «ete».", ["eten", "maken", "lopen", "spreken"]]
+];
+document.getElementById("sounds").innerHTML = SOUNDS.map(([sym, txt, ws]) => `<div class="sound"><span class="sym">${sym}</span><p>${txt}</p>
+  <div class="words">${ws.map(w => hasTTS ? `<button class="btn small" data-say="${w}">▶ ${w}</button>` : `<span class="mono">${w}</span>`).join("")}</div></div>`).join("");
+
+/* ---------- Repetición espaciada (sistema Leitner) para los verbos */
+const BOX_DAYS = [1, 2, 4, 7, 15, 30];
+function addDays(isoStr, n) { const [y, m, d] = isoStr.split("-").map(Number); return iso(new Date(y, m - 1, d + n)); }
+function srsUpdate(inf, ok) {
+  prog.srs = prog.srs || {};
+  const c = prog.srs[inf] || { box: 0 };
+  c.box = ok ? Math.min(c.box + 1, BOX_DAYS.length - 1) : 0;
+  c.due = addDays(TODAY, ok ? BOX_DAYS[c.box] : 1);
+  prog.srs[inf] = c;
+  store.set("ved.progress", prog);
+  renderSrsSummary();
+}
+function srsCounts() {
+  const s = prog.srs || {}, vals = Object.values(s);
+  return { learned: vals.filter(c => c.box >= 3).length, due: Object.keys(s).filter(k => s[k].due <= TODAY).length, seen: vals.length };
+}
+function renderSrsSummary() {
+  const c = srsCounts();
+  document.getElementById("verb-count").textContent = `${VERBS.length} verbos · ${c.seen} practicados · ${c.learned} dominados · ${c.due} para repasar hoy`;
+}
+renderSrsSummary();
+
+/* ---------- Rutina diaria de 15 minutos */
+const ROUTINE = [
+  ["verbs", "Reto de 5 verbos", "Recuerdo activo y repaso espaciado: los verbos que fallas vuelven antes.", "uitdaging", "5 min"],
+  ["listen", "Escuchar una noticia sin leer", "Input comprensible: entiende el sentido, después mira el texto.", "kranten", "4 min"],
+  ["pron", "Shadowing o pronunciación", "Repite frases imitando ritmo y melodía. Grábate y compara.", "uitspraak", "3 min"],
+  ["write", "Dictado o preguntas", "Producción: escribir te obliga a fijarte en cada palabra.", "kranten", "3 min"]
+];
+function logPractice(key) {
+  if (!prog.routine || prog.routine.date !== TODAY) prog.routine = { date: TODAY, done: [] };
+  if (!prog.routine.done.includes(key)) { prog.routine.done.push(key); store.set("ved.progress", prog); renderRoutine(); }
+}
+function renderRoutine() {
+  const el = document.getElementById("routine"); if (!el) return;
+  const done = prog.routine && prog.routine.date === TODAY ? prog.routine.done : [];
+  if (prog.history[TODAY] != null && !done.includes("verbs")) done.push("verbs");
+  el.innerHTML = `<div class="row" style="justify-content:space-between"><h3>Tu rutina de hoy · 15 minutos</h3><span class="muted">${done.length} de ${ROUTINE.length}</span></div>
+    <div class="routine">${ROUTINE.map(([k, t, why, tab, min]) => `<label class="${done.includes(k) ? "done" : ""}"><input type="checkbox" data-r="${k}" ${done.includes(k) ? "checked" : ""}><span><b>${t}</b><span class="why">${why}</span></span><button class="btn small" type="button" data-goto="${tab}">${min} →</button></label>`).join("")}</div>`;
+  el.querySelectorAll("[data-r]").forEach(c => c.onchange = () => {
+    if (!prog.routine || prog.routine.date !== TODAY) prog.routine = { date: TODAY, done: [] };
+    const k = c.dataset.r;
+    prog.routine.done = c.checked ? [...new Set([...prog.routine.done, k])] : prog.routine.done.filter(x => x !== k);
+    store.set("ved.progress", prog); renderRoutine();
+  });
+}
+renderRoutine();
+
+/* ---------- Test de nivel */
+const TEST = [
+  ["A1", "Ik ___ uit Spanje.", ["kom", "komt", "komen", "kwam"], 0],
+  ["A1", "Hoe ___ je?  (¿Cómo te llamas?)", ["heet", "heten", "ben", "hebt"], 0],
+  ["A1", "Wij ___ in Gent.", ["woon", "woont", "wonen", "gewoond"], 2],
+  ["A1", "Hij ___ twee kinderen.", ["heb", "heeft", "is", "hebben"], 1],
+  ["A1", "Een koffie, ___.  (por favor, a un camarero)", ["dank u", "alstublieft", "goeiedag", "tot ziens"], 1],
+  ["A1", "«Dag!» en Bélgica significa…", ["solo «adiós»", "solo «día»", "«hola» y «adiós»", "«gracias»"], 2],
+  ["A2", "Gisteren ___ ik naar de markt.", ["ga", "ging", "gegaan", "gaan"], 1],
+  ["A2", "Ik heb het boek al ___.", ["lezen", "las", "gelezen", "geleest"], 2],
+  ["A2", "Morgen ___ naar Antwerpen.", ["ik ga", "ga ik", "gaat ik", "ik gaan"], 1],
+  ["A2", "¿Qué frase es correcta?", ["Ik weet dat hij is ziek.", "Ik weet dat is hij ziek.", "Ik weet dat hij ziek is.", "Ik weet hij dat ziek is."], 2],
+  ["A2", "«Ik heb goesting in frietjes» quiere decir…", ["Odio las patatas fritas", "Tengo ganas de patatas fritas", "He comido patatas fritas", "Compro patatas fritas"], 1],
+  ["A2", "We zijn vorige zomer naar de kust ___.", ["gaan", "gegaan", "gingen", "gaat"], 1],
+  ["B1", "Als het regent, ___ thuis.", ["we blijven", "blijven we", "blijft we", "we blijft"], 1],
+  ["B1", "De man ___ ik gisteren zag, is mijn buurman.", ["die", "dat", "wie", "wat"], 0],
+  ["B1", "Er wordt veel ___ over de verkiezingen.", ["spreken", "sprak", "gesproken", "gesprookt"], 2],
+  ["B1", "Hij is vorig jaar gestopt ___ roken.", ["van", "met", "om", "te"], 1],
+  ["B1", "Ik heb geen tijd ___ te koken.", ["voor", "dat", "om", "te"], 2],
+  ["B1", "Het boek ___ ik las, was spannend.", ["die", "dat", "wat", "wie"], 1],
+  ["B2", "Hoewel hij moe was, ___ toch werken.", ["hij ging", "ging hij", "gaat hij", "hij gaan"], 1],
+  ["B2", "Als ik dat had geweten, ___ ik niet gekomen.", ["had", "ben", "was", "werd"], 2],
+  ["B2", "«Iets onder de knie hebben» significa…", ["dominar algo", "esconder algo", "tener una lesión", "rendirse"], 0],
+  ["B2", "Er werd beslist ___ de maatregelen te verlengen.", ["dat", "om", "van", "voor"], 1],
+  ["B2", "Mocht je nog vragen hebben, ___ me dan gerust.", ["contacteer", "contacteert", "contacteren", "gecontacteerd"], 0],
+  ["B2", "Ondanks ___ regen ging de wedstrijd door.", ["het hevige", "de hevig", "de hevige", "hevige de"], 2]
+];
+const LEVELS = ["A1", "A2", "B1", "B2"];
+let t = null;
+function renderTestIntro() {
+  const el = document.getElementById("test");
+  el.innerHTML = `<div style="display:flex;flex-direction:column;gap:16px">
+    <p class="eyebrow">Test de nivel · ${TEST.length} preguntas</p>
+    <h2>¿Qué nivel de neerlandés tienes?</h2>
+    <p>Las preguntas van de A1 a B2 e incluyen expresiones flamencas. Tardarás unos 8 minutos. Tu resultado aparece arriba y ajusta el nivel del lector de periódicos.</p>
+    ${prog.level ? `<p class="muted">Último resultado: <b>${prog.level}</b></p>` : ""}
+    <div class="row"><button class="btn primary" id="btn-start-test">Empezar el test</button>
+    <button class="btn" id="btn-gen-test" ${sample ? "" : "hidden"}>Test nuevo creado por Claude</button></div>
+    <div class="row"><label for="gen-level" class="muted" style="font-size:.9rem">Nivel del test nuevo</label>
+    <select id="gen-level" style="width:auto">${LEVELS.map(l => `<option ${l === (prog.level || "A2") ? "selected" : ""}>${l}</option>`).join("")}</select></div>
+    <p class="status" id="gen-status"></p></div>`;
+  el.querySelector("#btn-start-test").onclick = () => startTest(TEST, true);
+  el.querySelector("#btn-gen-test").onclick = genTest;
+}
+function startTest(qs, placement) { t = { qs, i: 0, answers: [], placement }; renderQuestion(); }
+function renderQuestion() {
+  const el = document.getElementById("test");
+  if (t.i >= t.qs.length) return renderTestResult();
+  const [lvl, q, opts] = t.qs[t.i];
+  el.innerHTML = `<div style="display:flex;flex-direction:column;gap:16px" class="pop">
+    <div class="row" style="justify-content:space-between"><span class="eyebrow">Pregunta ${t.i + 1} de ${t.qs.length}</span><span class="lvl">${lvl}</span></div>
+    <div class="progress">${t.qs.map((_, k) => `<i class="${k < t.i ? (t.answers[k] ? "ok" : "ko") : k === t.i ? "now" : ""}"></i>`).join("")}</div>
+    <p class="q-prompt">${esc(q)}</p>
+    <div class="opts">${opts.map((o, k) => `<button class="opt" data-k="${k}">${esc(o)}</button>`).join("")}</div>
+    <div id="test-next"></div></div>`;
+  el.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+    const k = +b.dataset.k, right = t.qs[t.i][3];
+    t.answers.push(k === right);
+    el.querySelectorAll(".opt").forEach((x, j) => { x.disabled = true; if (j === right) x.classList.add("ok"); else if (j === k) x.classList.add("ko"); });
+    const expl = t.qs[t.i][4];
+    el.querySelector("#test-next").innerHTML = `${expl ? `<p class="muted" style="margin-bottom:10px">${esc(expl)}</p>` : ""}<div class="row" style="justify-content:flex-end"><button class="btn primary" id="btn-tn">${t.i < t.qs.length - 1 ? "Siguiente" : "Ver resultado"}</button></div>`;
+    const n = el.querySelector("#btn-tn"); n.onclick = () => { t.i++; renderQuestion(); }; n.focus({ preventScroll: true });
+  });
+}
+function renderTestResult() {
+  const el = document.getElementById("test");
+  const score = t.answers.filter(Boolean).length;
+  if (!t.placement) {
+    el.innerHTML = `<div style="display:flex;flex-direction:column;gap:14px" class="pop"><p class="eyebrow">Test de práctica</p>
+      <h2>${score} / ${t.qs.length} correctas</h2><div class="row"><button class="btn primary" id="btn-back">Volver</button></div></div>`;
+    el.querySelector("#btn-back").onclick = renderTestIntro;
+    return;
+  }
+  const per = LEVELS.map(L => { const idx = t.qs.map((q, k) => q[0] === L ? k : -1).filter(k => k >= 0); const ok = idx.filter(k => t.answers[k]).length; return { L, ok, n: idx.length }; });
+  let level = "<A1";
+  for (const p of per) { if (p.ok / p.n >= 0.67) level = p.L; else break; }
+  prog.level = level; store.set("ved.progress", prog); renderStats();
+  const advice = {
+    "<A1": "Empieza por el reto diario y la lista de verbos. Pronto podrás leer Wablieft.",
+    A1: "Haz el reto diario y lee Wablieft con el lector en nivel A1.",
+    A2: "Lee Wablieft y prueba artículos cortos de VRT NWS con el lector.",
+    B1: "Ya puedes con VRT NWS, Het Nieuwsblad y HLN. Fíjate en el orden de las palabras.",
+    B2: "Lee De Standaard y De Morgen. Busca expresiones y registro formal."
+  }[level];
+  el.innerHTML = `<div style="display:flex;flex-direction:column;gap:18px" class="pop">
+    <p class="eyebrow">Tu nivel estimado</p>
+    <div class="row" style="align-items:flex-end;gap:16px"><span class="big-level">${level}</span><span class="muted">${score} de ${t.qs.length} correctas</span></div>
+    <div class="levels">${per.map(p => `<div class="level ${LEVELS.indexOf(p.L) <= LEVELS.indexOf(level) ? "reached" : ""}"><b>${p.L}</b><span>${p.ok}/${p.n}</span></div>`).join("")}</div>
+    <p>${advice}</p>
+    <div class="row"><button class="btn primary" id="btn-go-news">Ir a los periódicos</button><button class="btn" id="btn-retest">Repetir el test</button></div></div>`;
+  if (level !== "<A1") { document.getElementById("read-level").value = level; store.set("ved.readlvl", level); }
+  el.querySelector("#btn-go-news").onclick = () => showTab("kranten");
+  el.querySelector("#btn-retest").onclick = renderTestIntro;
+}
+async function genTest() {
+  const lvl = document.getElementById("gen-level").value, status = document.getElementById("gen-status"), btn = document.getElementById("btn-gen-test");
+  btn.disabled = true; status.textContent = "Claude está preparando 10 preguntas nuevas…";
+  const prompt = `Crea un test de 10 preguntas de opción múltiple de neerlandés de Bélgica (Vlaams/Belgisch-Nederlands) de nivel ${lvl} (MCER) para un hispanohablante.
+Mezcla gramática (verbos, orden de palabras, preposiciones), vocabulario cotidiano y 2 preguntas sobre palabras o expresiones típicamente flamencas. Las instrucciones y traducciones en español; las frases en neerlandés.
+Responde SOLO con un array JSON de 10 objetos: {"vraag":"texto de la pregunta (usa ___ para el hueco)","opties":["a","b","c","d"],"juist":índice 0-3 de la respuesta correcta,"uitleg":"explicación breve en español"}`;
+  try {
+    const arr = await sample.json(prompt, { cache: false });
+    const qs = (Array.isArray(arr) ? arr : []).filter(q => q && Array.isArray(q.opties) && q.opties.length >= 2 && Number.isInteger(q.juist) && q.juist < q.opties.length)
+      .map(q => [lvl, String(q.vraag), q.opties.map(String), q.juist, q.uitleg ? String(q.uitleg) : ""]);
+    if (!qs.length) throw { code: "invalid_json" };
+    startTest(qs, false);
+  } catch (e) {
+    status.textContent = ERR[e && e.code] || "No se pudo crear el test. Inténtalo de nuevo.";
+    if (e && HIDE.includes(e.code)) btn.hidden = true;
+    btn.disabled = false;
+  }
+}
+renderTestIntro();
+})();
+</script>
+
+</body>
+</html>
