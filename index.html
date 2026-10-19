@@ -720,6 +720,7 @@ const I18N = {
   "pr.blocked": ["El micrófono está bloqueado aquí. Mira el aviso en la pestaña Hablar.", "O microfone está bloqueado aqui. Veja o aviso na aba Falar.", "The microphone is blocked here. See the notice in the Speak tab.", "Le micro est bloqué ici. Vois l'avis dans l'onglet Parler."],
   "pr.retry": ["No se pudo usar el micrófono. Inténtalo otra vez.", "Não foi possível usar o microfone. Tente de novo.", "Couldn't use the microphone. Try again.", "Impossible d'utiliser le micro. Réessaie."],
   "mic.nospeech": ["No te he oído. Pulsa «Hablar» y di la frase cuando el botón cambie.", "Não ouvi você. Toque em «Falar» e diga a frase quando o botão mudar.", "I didn't hear you. Tap “Speak” and say the sentence when the button changes.", "Je ne t'ai pas entendu. Touche « Parler » et dis la phrase quand le bouton change."],
+  "mic.osmuted": ["Tu micrófono está silenciado en el sistema, así que el navegador solo recibe silencio. Actívalo en Windows: Configuración › Sistema › Sonido › Entrada › quita el silencio del micrófono (o pulsa la tecla de micrófono del teclado). En el móvil, revisa que no esté en silencio y que ninguna otra app lo esté usando.", "Seu microfone está silenciado no sistema, então o navegador só recebe silêncio. Ative no Windows: Configurações › Sistema › Som › Entrada › tire o microfone do mudo (ou aperte a tecla de microfone do teclado). No celular, verifique se não está no mudo e se nenhum outro app o está usando.", "Your microphone is muted in the system, so the browser only gets silence. Unmute it in Windows: Settings › System › Sound › Input › unmute the microphone (or press the microphone key on your keyboard). On a phone, check it isn't muted and no other app is using it.", "Ton micro est coupé dans le système, donc le navigateur ne reçoit que du silence. Réactive-le dans Windows : Paramètres › Système › Son › Entrée › réactive le micro (ou appuie sur la touche micro du clavier). Sur mobile, vérifie qu'il n'est pas coupé et qu'aucune autre appli ne l'utilise."],
   "mic.nomic": ["No encuentro ningún micrófono. Revisa que esté conectado.", "Não encontro nenhum microfone. Verifique se está conectado.", "No microphone found. Check that it's connected.", "Aucun micro trouvé. Vérifie qu'il est branché."],
   "mic.network": ["El reconocimiento de voz necesita conexión a internet.", "O reconhecimento de voz precisa de internet.", "Speech recognition needs an internet connection.", "La reconnaissance vocale a besoin d'internet."],
   "mic.lang": ["Este navegador no reconoce neerlandés. Prueba con Chrome.", "Este navegador não reconhece holandês. Tente o Chrome.", "This browser doesn't recognise Dutch. Try Chrome.", "Ce navigateur ne reconnaît pas le néerlandais. Essaie Chrome."],
@@ -1431,6 +1432,9 @@ async function startRecorder() {
   try {
     if (!navigator.mediaDevices || !window.MediaRecorder) return null;
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const track = stream.getAudioTracks()[0];
+    if (track && track.muted) await new Promise(r => setTimeout(r, 400));
+    if (track && track.muted) { stream.getTracks().forEach(x => x.stop()); return { osMuted: true }; }
     const mr = new MediaRecorder(stream), chunks = [];
     mr.ondataavailable = e => e.data.size && chunks.push(e.data);
     const done = new Promise(res => mr.onstop = () => { stream.getTracks().forEach(x => x.stop()); res(chunks.length ? URL.createObjectURL(new Blob(chunks, { type: mr.mimeType })) : null); });
@@ -1444,7 +1448,10 @@ async function runMic(box) {
   if (activeRec) { try { activeRec.stop(); } catch {} return; }
   stopAudio();
   out.innerHTML = `<p class="status">${t("pr.preparing")}</p>`;
-  const rec = await startRecorder();
+  /* En móviles el micrófono no se puede compartir: grabar a la vez que se reconoce la voz hace fallar el reconocimiento. */
+  const MOBILE = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  let rec = MOBILE ? null : await startRecorder();
+  if (rec && rec.osMuted) { out.innerHTML = `<div class="mic-banner"><b>${t("mic.osmuted")}</b></div>`; return; }
   try {
     const alts = await listenOnce(() => { btn.classList.add("rec"); btn.textContent = t("pr.stop"); out.innerHTML = `<p class="status">${t("pr.listening")}</p>`; });
     const target = words(text).length || 1;
@@ -1574,6 +1581,8 @@ async function micTest(auto) {
   let stream = null, ctx = null, raf = 0, peak = 0, heard = null, srErr = null;
   try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false } }); }
   catch { out.innerHTML = `<p>${t("mt.denied")}</p>`; micBlocked = true; refreshMicBanner(); btns.forEach(b => b.disabled = false); return; }
+  { const tr = stream.getAudioTracks()[0]; if (tr && tr.muted) await new Promise(r => setTimeout(r, 400));
+    if (tr && tr.muted) { stream.getTracks().forEach(x => x.stop()); out.innerHTML = `<div class="mic-banner"><b>${t("mic.osmuted")}</b></div>`; btns.forEach(b => b.disabled = false); return; } }
   try {
     ctx = new (window.AudioContext || window.webkitAudioContext)();
     const an = ctx.createAnalyser(); an.fftSize = 512; ctx.createMediaStreamSource(stream).connect(an);
