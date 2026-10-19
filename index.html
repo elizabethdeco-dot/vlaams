@@ -282,6 +282,24 @@ nav.tabs button{font-size:.68rem;padding:8px 2px}
 .turn{align-self:stretch;border:2px solid var(--accent);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:8px}
 .turn .cue{font-size:1.1rem;font-weight:700}
 .turn .pron{border-top:0;padding:0}
+.learn-switch{position:sticky;top:env(safe-area-inset-top,0px);z-index:4;background:var(--raise);box-shadow:0 0 0 6px var(--bg)}
+.mod-head{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+.mod-head b{font-family:var(--f-display)}
+.unit-card .ico{font-family:var(--f-display);font-weight:800;font-size:1.2rem}
+.unit-card.done .ico{background:var(--good-bg);color:var(--good)}
+.rule-card{background:var(--soft);border-color:transparent;display:flex;flex-direction:column;gap:8px}
+.ex-line{font-family:var(--f-mono);font-size:.9rem;line-height:1.6}
+.instr{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border-left:4px solid var(--accent);background:var(--raise);border-radius:0 12px 12px 0}
+.q-prompt.big{font-size:1.35rem;font-weight:700;line-height:1.4}
+.blank{display:inline-block;min-width:3.5em;border-bottom:3px solid var(--accent);color:transparent}
+.q-prompt u{text-decoration-color:var(--good);text-decoration-thickness:3px;color:var(--good)}
+.build{min-height:56px;display:flex;flex-wrap:wrap;gap:8px;padding:10px;border-radius:14px;border:2px dashed var(--line);align-items:center}
+.bank{display:flex;flex-wrap:wrap;gap:8px}
+.chipw{font:700 1rem var(--f-body);padding:10px 14px;min-height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;box-shadow:0 2px 0 var(--line)}
+.chipw.on{background:var(--soft);border-color:var(--accent);box-shadow:0 2px 0 var(--accent)}
+.chipw.ghost{opacity:.25;cursor:default;box-shadow:none}
+.task{padding:14px;border-radius:14px;background:var(--raise);display:flex;flex-direction:column;gap:6px}
+.checklist{display:flex;flex-direction:column;gap:4px;padding:14px 16px}
 .meter{height:12px;border-radius:6px;background:var(--raise);overflow:hidden}
 .meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--good),var(--accent));transition:width .08s linear}
 </style>
@@ -347,11 +365,18 @@ nav.tabs button{font-size:.68rem;padding:8px 2px}
 
   <!-- TEMAS -->
   <section class="panel" id="p-temas" hidden>
-    <div id="themes-home" style="display:flex;flex-direction:column;gap:14px">
-      <div><h2 data-i18n="th.title">Temas</h2><p class="muted" data-i18n="th.intro"></p></div>
-      <div id="themes-list" style="display:flex;flex-direction:column;gap:12px"></div>
+    <div class="seg learn-switch" id="learn-switch" role="group"></div>
+    <div id="course-area" style="display:flex;flex-direction:column;gap:14px">
+      <div id="course-list" style="display:flex;flex-direction:column;gap:12px"></div>
+      <div id="unit-view" hidden style="display:flex;flex-direction:column;gap:14px"></div>
     </div>
-    <div id="theme-view" hidden style="display:flex;flex-direction:column;gap:14px"></div>
+    <div id="themes-area" hidden>
+      <div id="themes-home" style="display:flex;flex-direction:column;gap:14px">
+        <div><h2 data-i18n="th.title">Temas</h2><p class="muted" data-i18n="th.intro"></p></div>
+        <div id="themes-list" style="display:flex;flex-direction:column;gap:12px"></div>
+      </div>
+      <div id="theme-view" hidden style="display:flex;flex-direction:column;gap:14px"></div>
+    </div>
   </section>
 
   <!-- VERBOS -->
@@ -596,7 +621,7 @@ const I18N = {
   "routine.of": ["{a} de {b}", "{a} de {b}", "{a} of {b}", "{a} sur {b}"],
   "r.verbs": ["Reto de 5 verbos", "Desafio de 5 verbos", "5-verb challenge", "Défi de 5 verbes"],
   "r.verbs.why": ["Recuerdo activo y repaso espaciado: los verbos que fallas vuelven antes.", "Memória ativa e revisão espaçada: os verbos que você erra voltam antes.", "Active recall and spaced repetition: verbs you miss come back sooner.", "Rappel actif et répétition espacée : les verbes ratés reviennent plus tôt."],
-  "r.theme": ["Un tema: tarjetas o diálogo", "Um tema: cartões ou diálogo", "One topic: cards or dialogue", "Un thème : cartes ou dialogue"],
+  "r.theme": ["Una lección del curso o un tema", "Uma lição do curso ou um tema", "A course lesson or a topic", "Une leçon du cours ou un thème"],
   "r.theme.why": ["Vocabulario útil para tu trabajo y tu día a día.", "Vocabulário útil para seu trabalho e seu dia a dia.", "Useful words for your job and daily life.", "Du vocabulaire utile pour ton travail et ton quotidien."],
   "r.listen": ["Escuchar una noticia sin leer", "Ouvir uma notícia sem ler", "Listen to a news item without reading", "Écouter une actu sans lire"],
   "r.listen.why": ["Input comprensible: entiende el sentido, después mira el texto.", "Input compreensível: entenda o sentido, depois veja o texto.", "Comprehensible input: get the gist, then check the text.", "Input compréhensible : saisis le sens, puis regarde le texte."],
@@ -920,6 +945,7 @@ tabs.forEach(t => t.addEventListener("click", () => { showTab(t.dataset.tab); wi
 document.addEventListener("click", e => {
   const g = e.target.closest("[data-goto]"); if (!g) return;
   showTab(g.dataset.goto);
+  if (g.dataset.learn) { learnMode = g.dataset.learn; store.set("ved.learn", learnMode); renderLearnSwitch(); }
   if (g.dataset.theme) openTheme(g.dataset.theme);
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
@@ -2145,6 +2171,387 @@ Responde SOLO con un array JSON de 10 objetos: {"vraag":"pregunta (usa ___ para 
   }
 }
 
+
+/* ---------- Curso NT2: lecciones al estilo de los CVO de Flandes (Richtgraad 1 = A1–A2, Richtgraad 2 = B1)
+   Material propio inspirado en el programa oficial NT2; las instrucciones van en neerlandés sencillo, como en clase.
+   Tipos: mc (opción múltiple), gap (rellenar), order (ordenar palabras), listen (escuchar y elegir),
+          speak (leer en voz alta), write (tarea de escritura con lista de control y texto modelo). */
+const COURSE = [
+  { id: "u1", mod: "1.1", lvl: "A1", nl: "Kennismaken", name: ["Presentarse", "Apresentar-se", "Introducing yourself", "Se présenter"],
+    rule: { nl: "zijn en hebben", ex: "ik ben · jij bent · hij/zij is · wij zijn — ik heb · jij hebt · hij/zij heeft · wij hebben",
+      tr: ["Verbos zijn (ser, estar) y hebben (tener). En las preguntas el verbo va primero: Ben jij Ana?", "Verbos zijn (ser, estar) e hebben (ter). Nas perguntas o verbo vem primeiro: Ben jij Ana?", "The verbs zijn (to be) and hebben (to have). In questions the verb comes first: Ben jij Ana?", "Les verbes zijn (être) et hebben (avoir). Dans les questions, le verbe vient en premier : Ben jij Ana ?"] },
+    ex: [
+      { t: "mc", q: "Ik ___ Ana.", o: ["ben", "bent", "is", "zijn"], a: 0 },
+      { t: "mc", q: "Hoe ___ je? — Ik heet Omar.", o: ["heet", "heten", "heb", "ben"], a: 0 },
+      { t: "gap", q: "Waar kom je vandaan? — Ik ___ uit Marokko.", a: ["kom"] },
+      { t: "gap", q: "Zij ___ twee kinderen. (hebben)", a: ["heeft"] },
+      { t: "order", w: ["woon", "in", "ik", "Hasselt"], a: ["Ik woon in Hasselt."] },
+      { t: "order", w: ["je", "Nederlands", "spreek"], a: ["Spreek je Nederlands?"] },
+      { t: "listen", s: "Dag, ik ben Lucas. Ik kom uit Brazilië en ik woon in Genk.", q: "Waar woont Lucas?", o: ["In Brazilië", "In Genk", "In Gent"], a: 1 },
+      { t: "speak", s: "Goeiedag, ik ben Ana. Ik kom uit Spanje." },
+      { t: "write", nl: "Schrijf een kort bericht aan je nieuwe buren. Zeg wie je bent, waar je vandaan komt en waar je werkt.",
+        tr: ["Escribe un mensaje corto a tus nuevos vecinos. Di quién eres, de dónde vienes y dónde trabajas.", "Escreva uma mensagem curta para seus novos vizinhos. Diga quem você é, de onde vem e onde trabalha.", "Write a short message to your new neighbours. Say who you are, where you're from and where you work.", "Écris un court message à tes nouveaux voisins. Dis qui tu es, d'où tu viens et où tu travailles."],
+        need: ["ik ben|ik heet", "ik kom uit", "ik werk"], min: 20,
+        model: "Dag buren! Ik ben Ana. Ik kom uit Spanje. Ik woon sinds maart in nummer 12. Ik werk in een supermarkt in Hasselt. Tot binnenkort!" }
+    ] },
+  { id: "u2", mod: "1.1", lvl: "A1", nl: "Wonen", name: ["La vivienda", "Moradia", "Housing", "Le logement"],
+    rule: { nl: "de of het · meervoud · er is / er zijn", ex: "het huis → de huizen · de kamer → de kamers · er is een keuken · er zijn twee slaapkamers",
+      tr: ["Los sustantivos llevan de o het. Plural: casi siempre -en o -s, y siempre con de. «Er is» = hay (singular); «er zijn» = hay (plural).", "Os substantivos levam de ou het. Plural: quase sempre -en ou -s, e sempre com de. «Er is» = há (singular); «er zijn» = há (plural).", "Nouns take de or het. Plural: usually -en or -s, always with de. 'Er is' = there is; 'er zijn' = there are.", "Les noms prennent de ou het. Pluriel : souvent -en ou -s, toujours avec de. « Er is » = il y a (singulier) ; « er zijn » = il y a (pluriel)."] },
+    ex: [
+      { t: "mc", q: "___ appartement heeft twee slaapkamers.", o: ["Het", "De", "Den"], a: 0 },
+      { t: "mc", q: "Er ___ twee badkamers.", o: ["is", "zijn", "heeft"], a: 1 },
+      { t: "gap", q: "Eén kamer, twee ___.", a: ["kamers"] },
+      { t: "gap", q: "Eén huis, drie ___.", a: ["huizen"] },
+      { t: "order", w: ["huur", "de", "hoeveel", "is"], a: ["Hoeveel is de huur?"] },
+      { t: "order", w: ["zoek", "appartement", "ik", "een"], a: ["Ik zoek een appartement."] },
+      { t: "listen", s: "Het appartement heeft twee slaapkamers en een klein terras. De huur is 750 euro per maand.", q: "Hoeveel is de huur?", o: ["570 euro", "750 euro", "75 euro"], a: 1 },
+      { t: "speak", s: "Ik zoek een appartement met twee slaapkamers." },
+      { t: "write", nl: "Je zoekt een appartement. Schrijf een korte e-mail aan de verhuurder. Vraag naar de huur, het aantal slaapkamers en wanneer je kunt komen kijken.",
+        tr: ["Buscas un piso. Escribe un correo corto al propietario. Pregunta por el alquiler, el número de dormitorios y cuándo puedes ir a verlo.", "Você procura um apartamento. Escreva um e-mail curto ao proprietário. Pergunte o aluguel, o número de quartos e quando pode ir vê-lo.", "You're looking for a flat. Write a short email to the landlord. Ask about the rent, the number of bedrooms and when you can come and see it.", "Tu cherches un appartement. Écris un court e-mail au propriétaire. Demande le loyer, le nombre de chambres et quand tu peux venir le visiter."],
+        need: ["huur", "slaapkamer", "kijken|bezoeken"], min: 25,
+        model: "Beste meneer Peeters, ik heb interesse in uw appartement in de Stationsstraat. Hoeveel is de huur per maand? Hoeveel slaapkamers zijn er? Kan ik zaterdag komen kijken? Met vriendelijke groeten, Ana Lopez" }
+    ] },
+  { id: "u3", mod: "1.2", lvl: "A1", nl: "Winkelen", name: ["De compras", "Fazer compras", "Shopping", "Faire les courses"],
+    rule: { nl: "willen, mogen, kunnen + infinitief", ex: "Ik wil een kilo appels kopen. · Kan ik hier betalen? · Mag ik een zakje?",
+      tr: ["Con willen (querer), mogen (poder, permiso) y kunnen (poder), el segundo verbo va al final en infinitivo.", "Com willen (querer), mogen (poder, permissão) e kunnen (poder), o segundo verbo vai para o fim, no infinitivo.", "With willen (want), mogen (may) and kunnen (can), the second verb goes to the end as an infinitive.", "Avec willen (vouloir), mogen (avoir le droit) et kunnen (pouvoir), le deuxième verbe va à la fin, à l'infinitif."] },
+    ex: [
+      { t: "mc", q: "Ik ___ graag een brood.", o: ["wil", "wilt", "willen"], a: 0 },
+      { t: "mc", q: "___ ik met de kaart betalen?", o: ["Kan", "Kunt", "Kunnen"], a: 0 },
+      { t: "gap", q: "Hoeveel ___ de tomaten? — Twee euro per kilo. (kosten)", a: ["kosten"] },
+      { t: "gap", q: "Ik wil een kilo appels ___. (kopen)", a: ["kopen"] },
+      { t: "order", w: ["ik", "betalen", "mag", "Bancontact", "met"], a: ["Mag ik met Bancontact betalen?"] },
+      { t: "order", w: ["wil", "ik", "kaas", "kopen"], a: ["Ik wil kaas kopen."] },
+      { t: "listen", s: "Dat is dan twaalf euro vijftig. Wilt u een zakje?", q: "Hoeveel moet de klant betalen?", o: ["12,50 euro", "2,50 euro", "20,15 euro"], a: 0 },
+      { t: "speak", s: "Ik wil graag een kilo appels, alstublieft." },
+      { t: "write", nl: "Schrijf een boodschappenlijstje voor het weekend en een zin over waar je gaat winkelen.",
+        tr: ["Escribe una lista de la compra para el fin de semana y una frase sobre dónde vas a comprar.", "Escreva uma lista de compras para o fim de semana e uma frase sobre onde você vai fazer as compras.", "Write a shopping list for the weekend and one sentence about where you'll go shopping.", "Écris une liste de courses pour le week-end et une phrase pour dire où tu vas faire les courses."],
+        need: ["ik wil|ik ga", "kopen|winkelen"], min: 15,
+        model: "Boodschappen: brood, melk, een kilo appels, kaas en koffie. Zaterdag wil ik alles kopen in de supermarkt bij mij in de straat." }
+    ] },
+  { id: "u4", mod: "1.2", lvl: "A1", nl: "Gezondheid", name: ["La salud", "Saúde", "Health", "La santé"],
+    rule: { nl: "de gebiedende wijs", ex: "nemen → Neem! · blijven → Blijf thuis! · bellen → Bel de dokter!",
+      tr: ["Para dar instrucciones se usa la raíz del verbo: Neem (tome), Blijf (quédese), Bel (llame).", "Para dar instruções usa-se a raiz do verbo: Neem (tome), Blijf (fique), Bel (ligue).", "To give instructions, use the verb stem: Neem (take), Blijf (stay), Bel (call).", "Pour donner des consignes, on utilise le radical du verbe : Neem (prends), Blijf (reste), Bel (appelle)."] },
+    ex: [
+      { t: "mc", q: "___ drie keer per dag een tablet.", o: ["Neem", "Nemen", "Neemt"], a: 0 },
+      { t: "mc", q: "Ik heb pijn ___ mijn buik.", o: ["in", "aan", "op"], a: 0 },
+      { t: "gap", q: "Ik ___ een afspraak maken bij de huisarts. (willen)", a: ["wil"] },
+      { t: "gap", q: "___ thuis en drink veel water! (blijven)", a: ["blijf"] },
+      { t: "order", w: ["ik", "koorts", "heb"], a: ["Ik heb koorts."] },
+      { t: "order", w: ["afspraak", "een", "mag", "ik", "maken"], a: ["Mag ik een afspraak maken?"] },
+      { t: "listen", s: "Dokterspraktijk Hasselt, goeiemorgen. U kunt morgen om tien uur komen.", q: "Wanneer kan de patiënt komen?", o: ["Vandaag om tien uur", "Morgen om tien uur", "Morgen om twee uur"], a: 1 },
+      { t: "speak", s: "Goeiemorgen, ik wil graag een afspraak maken bij de dokter." },
+      { t: "write", nl: "Je kind is ziek. Schrijf een kort bericht aan de leerkracht: je kind blijft vandaag thuis.",
+        tr: ["Tu hijo está enfermo. Escribe un mensaje corto a la maestra: hoy tu hijo se queda en casa.", "Seu filho está doente. Escreva uma mensagem curta à professora: hoje seu filho fica em casa.", "Your child is ill. Write a short message to the teacher: your child is staying home today.", "Ton enfant est malade. Écris un court message à l'institutrice : ton enfant reste à la maison aujourd'hui."],
+        need: ["ziek", "thuis"], min: 15,
+        model: "Beste juf Sarah, Yasmine is ziek. Ze heeft koorts en blijft vandaag thuis. Morgen gaan we naar de dokter. Vriendelijke groeten, Fatima, de mama van Yasmine" }
+    ] },
+  { id: "u5", mod: "1.3", lvl: "A2", nl: "Werk zoeken", name: ["Buscar trabajo", "Procurar emprego", "Looking for work", "Chercher du travail"],
+    rule: { nl: "het perfectum", ex: "Ik heb vijf jaar als kok gewerkt. · Ik ben in 2023 naar België gekomen.",
+      tr: ["Para hablar del pasado: hebben/zijn + participio al final. ge + raíz + t/d: werken → gewerkt. Con movimiento o cambio se usa zijn.", "Para falar do passado: hebben/zijn + particípio no fim. ge + raiz + t/d: werken → gewerkt. Com movimento ou mudança usa-se zijn.", "To talk about the past: hebben/zijn + participle at the end. ge + stem + t/d: werken → gewerkt. Movement or change takes zijn.", "Pour parler du passé : hebben/zijn + participe à la fin. ge + radical + t/d : werken → gewerkt. Mouvement ou changement : zijn."] },
+    ex: [
+      { t: "mc", q: "Ik ___ drie jaar in een magazijn gewerkt.", o: ["heb", "ben", "word"], a: 0 },
+      { t: "mc", q: "Ik ben vorig jaar naar België ___.", o: ["gekomen", "gekomt", "komen"], a: 0 },
+      { t: "gap", q: "Ik heb mijn cv naar de VDAB ___. (sturen)", a: ["gestuurd"] },
+      { t: "gap", q: "Ze ___ in Brazilië als verpleegster gewerkt. (hebben)", a: ["heeft"] },
+      { t: "order", w: ["ervaring", "ik", "heb", "de", "in", "bouw"], a: ["Ik heb ervaring in de bouw."] },
+      { t: "order", w: ["solliciteren", "wil", "ik", "voor", "deze", "job"], a: ["Ik wil solliciteren voor deze job.", "Voor deze job wil ik solliciteren."] },
+      { t: "listen", s: "We zoeken een magazijnmedewerker voor de vroege ploeg. Je werkt van zes uur tot twee uur.", q: "Wanneer werk je?", o: ["Van zes tot twee", "Van twee tot zes", "Van acht tot vijf"], a: 0 },
+      { t: "speak", s: "Ik heb vijf jaar ervaring als kok." },
+      { t: "write", nl: "Schrijf een korte sollicitatiemail voor een job als magazijnmedewerker. Vertel over je ervaring en wanneer je kunt beginnen.",
+        tr: ["Escribe un correo corto de candidatura para un puesto de mozo de almacén. Habla de tu experiencia y de cuándo puedes empezar.", "Escreva um e-mail curto de candidatura para uma vaga de auxiliar de armazém. Fale da sua experiência e de quando pode começar.", "Write a short application email for a warehouse operative job. Mention your experience and when you can start.", "Écris un court e-mail de candidature pour un poste de magasinier. Parle de ton expérience et de quand tu peux commencer."],
+        need: ["ervaring", "gewerkt", "beginnen|starten"], min: 35,
+        model: "Geachte heer, mevrouw, ik solliciteer voor de job als magazijnmedewerker. Ik heb drie jaar in een magazijn in Spanje gewerkt. Ik kan met een scanner werken en ik heb een attest voor de heftruck. Ik kan op 1 december beginnen. Met vriendelijke groeten, Carlos Ruiz" }
+    ] },
+  { id: "u6", mod: "1.3", lvl: "A2", nl: "School en onderwijs", name: ["La escuela", "A escola", "School", "L'école"],
+    rule: { nl: "bijzin met omdat, dat, als", ex: "Ik kom niet. Mijn kind is ziek. → Ik kom niet, omdat mijn kind ziek is.",
+      tr: ["Después de omdat (porque), dat (que) y als (si, cuando), el verbo conjugado va al final de la frase.", "Depois de omdat (porque), dat (que) e als (se, quando), o verbo conjugado vai para o fim da frase.", "After omdat (because), dat (that) and als (if, when), the conjugated verb goes to the end of the clause.", "Après omdat (parce que), dat (que) et als (si, quand), le verbe conjugué va à la fin de la phrase."] },
+    ex: [
+      { t: "mc", q: "Ik kom later, omdat de bus ___.", o: ["te laat is", "is te laat", "te laat"], a: 0 },
+      { t: "mc", q: "De juf zegt dat Sami goed ___.", o: ["leert", "leren", "heeft"], a: 0 },
+      { t: "gap", q: "Ik weet niet ___ de school morgen open is. (of / dat)", a: ["of"] },
+      { t: "gap", q: "Als het regent, ___ de kinderen binnen. (blijven)", a: ["blijven"] },
+      { t: "order", w: ["hij", "blijft", "thuis", "omdat", "ziek", "is", "hij"], a: ["Hij blijft thuis, omdat hij ziek is.", "Omdat hij ziek is, blijft hij thuis."] },
+      { t: "order", w: ["is", "het", "oudercontact", "wanneer"], a: ["Wanneer is het oudercontact?"] },
+      { t: "listen", s: "Beste ouders, volgende vrijdag is er geen school. De leerkrachten hebben een studiedag.", q: "Waarom is er vrijdag geen school?", o: ["Er is een studiedag", "Het is een feestdag", "De school gaat verhuizen"], a: 0 },
+      { t: "speak", s: "Mijn dochter komt vandaag niet, omdat ze ziek is." },
+      { t: "write", nl: "Je kunt niet naar het oudercontact komen. Schrijf een e-mail aan de leerkracht. Leg uit waarom (gebruik omdat) en vraag een nieuwe afspraak.",
+        tr: ["No puedes ir a la reunión de padres. Escribe un correo a la maestra. Explica por qué (usa omdat) y pide una nueva cita.", "Você não pode ir à reunião de pais. Escreva um e-mail à professora. Explique por quê (use omdat) e peça um novo horário.", "You can't attend the parent-teacher meeting. Write an email to the teacher. Explain why (use omdat) and ask for a new appointment.", "Tu ne peux pas venir à la réunion de parents. Écris un e-mail à l'enseignante. Explique pourquoi (utilise omdat) et demande un nouveau rendez-vous."],
+        need: ["omdat", "afspraak"], min: 30,
+        model: "Beste meester Tom, ik kan donderdag niet naar het oudercontact komen, omdat ik tot acht uur moet werken. Kunnen we een nieuwe afspraak maken? Maandag of dinsdag na vier uur past voor mij. Vriendelijke groeten, Maria Santos" }
+    ] },
+  { id: "u7", mod: "1.4", lvl: "A2", nl: "Instanties en papieren", name: ["Trámites", "Documentos e serviços", "Paperwork and services", "Démarches"],
+    rule: { nl: "scheidbare werkwoorden", ex: "invullen: Ik vul het formulier in. · Ik heb het formulier ingevuld.",
+      tr: ["Algunos verbos se separan: opbellen → Ik bel de mutualiteit op. En perfectum: opgebeld, ingevuld.", "Alguns verbos se separam: opbellen → Ik bel de mutualiteit op. No perfectum: opgebeld, ingevuld.", "Some verbs split: opbellen → Ik bel de mutualiteit op. In the perfect: opgebeld, ingevuld.", "Certains verbes se séparent : opbellen → Ik bel de mutualiteit op. Au passé composé : opgebeld, ingevuld."] },
+    ex: [
+      { t: "mc", q: "Ik ___ het formulier vandaag in.", o: ["vul", "invul", "vult"], a: 0 },
+      { t: "mc", q: "Hebt u het document al ___?", o: ["ondertekend", "geondertekend", "ondertekent"], a: 0 },
+      { t: "gap", q: "Ik bel morgen de mutualiteit ___. (opbellen)", a: ["op"] },
+      { t: "gap", q: "Ik heb het formulier al ___. (invullen)", a: ["ingevuld"] },
+      { t: "order", w: ["identiteitskaart", "mijn", "ik", "kwijt", "ben"], a: ["Ik ben mijn identiteitskaart kwijt."] },
+      { t: "order", w: ["u", "hier", "tekenen", "moet"], a: ["U moet hier tekenen.", "Hier moet u tekenen.", "Moet u hier tekenen?"] },
+      { t: "listen", s: "U moet een afspraak maken via de website. Neem uw identiteitskaart en een pasfoto mee.", q: "Wat moet u meenemen?", o: ["Uw identiteitskaart en een pasfoto", "Alleen een pasfoto", "Uw bankkaart"], a: 0 },
+      { t: "speak", s: "Goeiedag, ik wil mijn nieuwe adres doorgeven." },
+      { t: "write", nl: "Je hebt een brief gekregen van de gemeente, maar je begrijpt hem niet goed. Schrijf een e-mail: zeg welke brief het is en vraag om uitleg of een afspraak.",
+        tr: ["Has recibido una carta del ayuntamiento, pero no la entiendes bien. Escribe un correo: di qué carta es y pide una explicación o una cita.", "Você recebeu uma carta da prefeitura, mas não entende bem. Escreva um e-mail: diga qual carta é e peça uma explicação ou um horário.", "You received a letter from the town hall but don't fully understand it. Write an email: say which letter it is and ask for an explanation or an appointment.", "Tu as reçu une lettre de la commune, mais tu ne la comprends pas bien. Écris un e-mail : dis de quelle lettre il s'agit et demande une explication ou un rendez-vous."],
+        need: ["brief", "uitleg|afspraak|uitleggen"], min: 30,
+        model: "Geachte heer, mevrouw, gisteren heb ik een brief gekregen over mijn adreswijziging. Ik begrijp niet goed wat ik moet doen. Kunt u het mij uitleggen, of kan ik een afspraak maken aan het loket? Alvast bedankt. Met vriendelijke groeten, Ahmed Benali" }
+    ] },
+  { id: "u8", mod: "1.4", lvl: "A2", nl: "Vrije tijd", name: ["Tiempo libre", "Tempo livre", "Free time", "Temps libre"],
+    rule: { nl: "inversie: het werkwoord op de tweede plaats", ex: "In het weekend speel ik voetbal. · Morgen gaan we naar de markt.",
+      tr: ["El verbo conjugado siempre va en 2.ª posición. Si empiezas con tiempo o lugar, el sujeto va detrás del verbo: Zaterdag ga ik zwemmen.", "O verbo conjugado fica sempre na 2.ª posição. Se você começa com tempo ou lugar, o sujeito vem depois do verbo: Zaterdag ga ik zwemmen.", "The conjugated verb is always in second position. If you start with time or place, the subject comes after the verb: Zaterdag ga ik zwemmen.", "Le verbe conjugué est toujours en 2e position. Si tu commences par le temps ou le lieu, le sujet passe après le verbe : Zaterdag ga ik zwemmen."] },
+    ex: [
+      { t: "mc", q: "Zaterdag ___ naar de film.", o: ["gaan we", "we gaan", "gaat we"], a: 0 },
+      { t: "mc", q: "In mijn vrije tijd ___ graag.", o: ["lees ik", "ik lees", "lezen ik"], a: 0 },
+      { t: "gap", q: "Elke woensdag ___ mijn zoon naar de voetbalclub. (gaan)", a: ["gaat"] },
+      { t: "gap", q: "Na het werk ___ ik vaak een wandeling. (maken)", a: ["maak"] },
+      { t: "order", w: ["morgen", "ik", "zwemmen", "ga"], a: ["Morgen ga ik zwemmen.", "Ik ga morgen zwemmen."] },
+      { t: "order", w: ["in", "zomer", "de", "fietsen", "we", "veel"], a: ["In de zomer fietsen we veel.", "We fietsen veel in de zomer."] },
+      { t: "listen", s: "Heb je zin om zondag mee te gaan naar Bokrijk? We vertrekken om twee uur.", q: "Hoe laat vertrekken ze?", o: ["Om twee uur", "Om twaalf uur", "Om tien uur"], a: 0 },
+      { t: "speak", s: "In het weekend ga ik graag fietsen langs het kanaal." },
+      { t: "write", nl: "Een collega vraagt wat je dit weekend doet. Schrijf een kort antwoord: wat ga je doen, waar en met wie? Begin één zin met Zaterdag of Zondag.",
+        tr: ["Un compañero te pregunta qué haces este fin de semana. Escribe una respuesta corta: qué vas a hacer, dónde y con quién. Empieza una frase con Zaterdag o Zondag.", "Um colega pergunta o que você vai fazer neste fim de semana. Escreva uma resposta curta: o que vai fazer, onde e com quem. Comece uma frase com Zaterdag ou Zondag.", "A colleague asks what you're doing this weekend. Write a short reply: what, where and with whom. Start one sentence with Zaterdag or Zondag.", "Un collègue te demande ce que tu fais ce week-end. Écris une courte réponse : quoi, où et avec qui. Commence une phrase par Zaterdag ou Zondag."],
+        need: ["zaterdag|zondag", "met"], min: 25,
+        model: "Zaterdag ga ik met mijn vrouw naar de markt in Genk. Zondag fietsen we met de kinderen naar Bokrijk. En jij, wat ga jij doen?" }
+    ] },
+  { id: "u9", mod: "2.1", lvl: "B1", nl: "Op het werk", name: ["En el trabajo", "No trabalho", "At work", "Au travail"],
+    rule: { nl: "de passieve vorm", ex: "De machine wordt elke week gecontroleerd. · Het magazijn is gisteren schoongemaakt.",
+      tr: ["Pasiva: worden + participio (presente) o zijn + participio (perfectum). Quien lo hace se introduce con door.", "Voz passiva: worden + particípio (presente) ou zijn + particípio (perfectum). Quem faz a ação: door.", "Passive: worden + participle (present) or zijn + participle (perfect). The agent comes with door.", "Passif : worden + participe (présent) ou zijn + participe (passé composé). L'agent est introduit par door."] },
+    ex: [
+      { t: "mc", q: "De machines ___ elke maand gecontroleerd.", o: ["worden", "wordt", "zijn worden"], a: 0 },
+      { t: "mc", q: "De bestelling is gisteren ___.", o: ["geleverd", "geleverdt", "leveren"], a: 0 },
+      { t: "gap", q: "Het veiligheidsoverleg ___ elke maandag gehouden. (worden)", a: ["wordt"] },
+      { t: "gap", q: "De vloer is net ___. Opgelet! (dweilen)", a: ["gedweild"] },
+      { t: "order", w: ["helm", "verplicht", "een", "is", "op", "werf", "de"], a: ["Op de werf is een helm verplicht.", "Een helm is verplicht op de werf."] },
+      { t: "order", w: ["wordt", "de", "geladen", "vrachtwagen"], a: ["De vrachtwagen wordt geladen.", "Wordt de vrachtwagen geladen?"] },
+      { t: "listen", s: "Opgelet: vanaf maandag moet iedereen in het magazijn veiligheidsschoenen en een fluohesje dragen. Wie dat niet doet, mag niet binnen.", q: "Wat is er vanaf maandag verplicht?", o: ["Veiligheidsschoenen en een fluohesje", "Alleen een helm", "Handschoenen"], a: 0 },
+      { t: "speak", s: "Kunt u mij uitleggen hoe deze machine werkt?" },
+      { t: "write", nl: "Er is een probleem op je werk: een machine is kapot. Schrijf een e-mail aan je verantwoordelijke. Leg uit wat er gebeurd is, wat het gevolg is en wat je voorstelt.",
+        tr: ["Hay un problema en el trabajo: una máquina está rota. Escribe un correo a tu responsable. Explica qué ha pasado, qué consecuencia tiene y qué propones.", "Há um problema no trabalho: uma máquina quebrou. Escreva um e-mail ao seu responsável. Explique o que aconteceu, qual é a consequência e o que você propõe.", "There's a problem at work: a machine is broken. Write an email to your supervisor. Explain what happened, the consequence and what you suggest.", "Il y a un problème au travail : une machine est en panne. Écris un e-mail à ton responsable. Explique ce qui s'est passé, la conséquence et ce que tu proposes."],
+        need: ["kapot|defect|storing|stilgevallen", "daardoor|daarom|gevolg", "stel voor|voorstel|kunnen we"], min: 50,
+        model: "Beste Kristof, vanochtend is de verpakkingsmachine in hal 2 stilgevallen. Er verschijnt een foutmelding en de band draait niet meer. Daardoor kunnen we de bestellingen voor Antwerpen niet op tijd klaarmaken. Ik stel voor dat we de technieker bellen en dat de bestellingen voorlopig met de hand worden ingepakt. Laat me iets weten. Groeten, Lucas" }
+    ] },
+  { id: "u10", mod: "2.1", lvl: "B1", nl: "Maatschappij en mening", name: ["Sociedad y opinión", "Sociedade e opinião", "Society and opinions", "Société et opinion"],
+    rule: { nl: "betrekkelijke bijzin: die en dat · je mening geven", ex: "De man die naast mij woont, werkt in Genk. · Het huis dat ik huur, is oud. · Ik vind dat …",
+      tr: ["Para dar más información: die (palabras con de y plurales), dat (palabras con het); el verbo va al final. Para opinar: Ik vind dat…, Volgens mij…", "Para dar mais informação: die (palavras com de e plurais), dat (palavras com het); o verbo vai para o fim. Para opinar: Ik vind dat…, Volgens mij…", "To add information: die (de-words and plurals), dat (het-words); the verb goes to the end. To give an opinion: Ik vind dat…, Volgens mij…", "Pour ajouter une information : die (mots en de et pluriels), dat (mots en het) ; le verbe va à la fin. Pour donner son avis : Ik vind dat…, Volgens mij…"] },
+    ex: [
+      { t: "mc", q: "Het artikel ___ ik gisteren las, ging over de verkiezingen.", o: ["dat", "die", "wat"], a: 0 },
+      { t: "mc", q: "Ik vind ___ er meer fietspaden moeten komen.", o: ["dat", "die", "of"], a: 0 },
+      { t: "gap", q: "De mensen ___ in Genk wonen, voelden de aardbeving. (die / dat)", a: ["die"] },
+      { t: "gap", q: "Volgens mij ___ het openbaar vervoer goedkoper worden. (moeten)", a: ["moet"] },
+      { t: "order", w: ["ben", "het", "daar", "ik", "niet", "mee", "eens"], a: ["Daar ben ik het niet mee eens.", "Ik ben het daar niet mee eens."] },
+      { t: "order", w: ["dat", "vind", "belangrijk", "ik"], a: ["Ik vind dat belangrijk.", "Dat vind ik belangrijk."] },
+      { t: "listen", s: "De stad Hasselt wil meer fietspaden aanleggen. Volgens de burgemeester wordt de stad zo veiliger en gezonder.", q: "Waarom wil de stad meer fietspaden?", o: ["De stad wordt veiliger en gezonder", "Er zijn te veel bussen", "Fietsen is goedkoper dan wandelen"], a: 0 },
+      { t: "speak", s: "Ik vind dat er in mijn wijk meer groen moet komen." },
+      { t: "write", nl: "Geef je mening in een kort tekstje: moeten de winkels ook op zondag open zijn? Geef twee argumenten en een besluit.",
+        tr: ["Da tu opinión en un texto corto: ¿deberían abrir las tiendas también los domingos? Da dos argumentos y una conclusión.", "Dê sua opinião em um texto curto: as lojas também deveriam abrir aos domingos? Dê dois argumentos e uma conclusão.", "Give your opinion in a short text: should shops also open on Sundays? Give two arguments and a conclusion.", "Donne ton avis dans un court texte : les magasins devraient-ils aussi ouvrir le dimanche ? Donne deux arguments et une conclusion."],
+        need: ["ik vind|volgens mij", "omdat|want|ten eerste", "daarom|kortom|besluit"], min: 50,
+        model: "Volgens mij moeten de winkels op zondag niet open zijn. Ten eerste hebben de werknemers ook recht op een vrije dag met hun familie. Ten tweede kan iedereen zijn boodschappen op zaterdag doen, want dan zijn de winkels lang open. Daarom vind ik dat de zondag een rustdag moet blijven." }
+    ] }
+];
+Object.assign(I18N, {
+  "learn.course": ["Curso NT2", "Curso NT2", "NT2 course", "Cours NT2"],
+  "tile.course": ["Curso NT2 · como en un CVO", "Curso NT2 · como num CVO", "NT2 course · like a CVO", "Cours NT2 · comme en CVO"],
+  "tile.course.sub": ["10 lecciones A1–B1 con opción múltiple, rellenar, ordenar, escuchar, hablar y escribir", "10 lições A1–B1 com múltipla escolha, completar, ordenar, ouvir, falar e escrever", "10 A1–B1 lessons with multiple choice, gap fill, word order, listening, speaking and writing", "10 leçons A1–B1 : QCM, textes à trous, ordre des mots, écoute, oral et écrit"],
+  "unit.count": ["{n} ejercicios", "{n} exercícios", "{n} exercises", "{n} exercices"],
+  "learn.themes": ["Temas y profesiones", "Temas e profissões", "Topics and jobs", "Thèmes et métiers"],
+  "course.intro": ["Lecciones inspiradas en el programa oficial NT2 (Nederlands als tweede taal) de los centros de adultos (CVO) de Flandes. Richtgraad 1 = A1–A2 · Richtgraad 2 = B1. Las instrucciones van en neerlandés sencillo, como en clase.", "Lições inspiradas no programa oficial NT2 (Nederlands als tweede taal) dos centros de educação de adultos (CVO) da Flandres. Richtgraad 1 = A1–A2 · Richtgraad 2 = B1. As instruções vêm em holandês simples, como na aula.", "Lessons inspired by the official NT2 (Dutch as a second language) programme of Flemish adult education centres (CVO). Richtgraad 1 = A1–A2 · Richtgraad 2 = B1. Instructions are in simple Dutch, as in class.", "Leçons inspirées du programme officiel NT2 (néerlandais langue seconde) des centres d'enseignement pour adultes (CVO) de Flandre. Richtgraad 1 = A1–A2 · Richtgraad 2 = B1. Les consignes sont en néerlandais simple, comme en classe."],
+  "course.lessons": ["{n} lecciones · {d} completadas", "{n} lições · {d} concluídas", "{n} lessons · {d} completed", "{n} leçons · {d} terminées"],
+  "unit.rule": ["Regla de la lección", "Regra da lição", "Lesson rule", "Règle de la leçon"],
+  "unit.start": ["Empezar los ejercicios", "Começar os exercícios", "Start the exercises", "Commencer les exercices"],
+  "unit.back": ["← Todas las lecciones", "← Todas as lições", "← All lessons", "← Toutes les leçons"],
+  "unit.ex": ["Ejercicio {a} de {b}", "Exercício {a} de {b}", "Exercise {a} of {b}", "Exercice {a} sur {b}"],
+  "unit.done": ["Lección terminada", "Lição concluída", "Lesson complete", "Leçon terminée"],
+  "unit.score": ["{n} % de aciertos", "{n} % de acertos", "{n}% correct", "{n} % de bonnes réponses"],
+  "unit.best": ["Mejor resultado: {n} %", "Melhor resultado: {n} %", "Best result: {n}%", "Meilleur résultat : {n} %"],
+  "unit.again": ["Repetir la lección", "Repetir a lição", "Redo the lesson", "Refaire la leçon"],
+  "unit.next": ["Siguiente lección →", "Próxima lição →", "Next lesson →", "Leçon suivante →"],
+  "unit.skip": ["Saltar", "Pular", "Skip", "Passer"],
+  "unit.done1": ["Hecho, siguiente", "Feito, próximo", "Done, next", "Fait, suivant"],
+  "ins.mc": ["Elige la respuesta correcta.", "Escolha a resposta correta.", "Choose the correct answer.", "Choisis la bonne réponse."],
+  "ins.gap": ["Escribe la palabra que falta.", "Escreva a palavra que falta.", "Type the missing word.", "Écris le mot qui manque."],
+  "ins.order": ["Toca las palabras en el orden correcto.", "Toque nas palavras na ordem certa.", "Tap the words in the right order.", "Touche les mots dans le bon ordre."],
+  "ins.listen": ["Escucha y elige la respuesta.", "Ouça e escolha a resposta.", "Listen and choose the answer.", "Écoute et choisis la réponse."],
+  "ins.speak": ["Lee la frase en voz alta (puedes usar el micrófono).", "Leia a frase em voz alta (pode usar o microfone).", "Read the sentence aloud (you can use the microphone).", "Lis la phrase à voix haute (tu peux utiliser le micro)."],
+  "ins.write": ["Tarea de escritura", "Tarefa de escrita", "Writing task", "Tâche d'écriture"],
+  "order.clear": ["Borrar", "Apagar", "Clear", "Effacer"],
+  "write.ph": ["Escribe tu texto en neerlandés…", "Escreva seu texto em holandês…", "Write your text in Dutch…", "Écris ton texte en néerlandais…"],
+  "write.count": ["{n} palabras · mínimo {m}", "{n} palavras · mínimo {m}", "{n} words · minimum {m}", "{n} mots · minimum {m}"],
+  "write.check": ["Revisar mi texto", "Revisar meu texto", "Check my text", "Vérifier mon texte"],
+  "write.list": ["Lista de control", "Lista de verificação", "Checklist", "Liste de contrôle"],
+  "write.len": ["Longitud suficiente ({m} palabras o más)", "Tamanho suficiente ({m} palavras ou mais)", "Long enough ({m} words or more)", "Longueur suffisante ({m} mots ou plus)"],
+  "write.use": ["Usa: {w}", "Usa: {w}", "Uses: {w}", "Utilise : {w}"],
+  "write.form": ["Empieza con mayúscula y termina con punto", "Começa com maiúscula e termina com ponto", "Starts with a capital and ends with a full stop", "Commence par une majuscule et finit par un point"],
+  "write.model": ["Texto modelo", "Texto modelo", "Model text", "Texte modèle"],
+  "write.claude": ["Claude está corrigiendo tu texto…", "Claude está corrigindo seu texto…", "Claude is correcting your text…", "Claude corrige ton texte…"],
+  "write.grade": ["Nota: {n}/10", "Nota: {n}/10", "Score: {n}/10", "Note : {n}/10"],
+  "write.fixed": ["Tu texto corregido", "Seu texto corrigido", "Your corrected text", "Ton texte corrigé"]
+});
+const insNl = { mc: "Kies het juiste antwoord.", gap: "Vul het juiste woord in.", order: "Zet de woorden in de juiste volgorde.", listen: "Luister en kies het juiste antwoord.", speak: "Lees de zin hardop.", write: "Schrijfopdracht" };
+let learnMode = store.get("ved.learn", "course");
+let curUnit = null, unitState = null;
+function renderLearnSwitch() {
+  document.getElementById("learn-switch").innerHTML = `<button data-learn="course" aria-pressed="${learnMode === "course"}">${t("learn.course")}</button><button data-learn="themes" aria-pressed="${learnMode === "themes"}">${t("learn.themes")}</button>`;
+  document.getElementById("course-area").hidden = learnMode !== "course";
+  document.getElementById("themes-area").hidden = learnMode !== "themes";
+}
+document.getElementById("learn-switch").addEventListener("click", e => {
+  const b = e.target.closest("[data-learn]"); if (!b) return;
+  stopAudio(); learnMode = b.dataset.learn; store.set("ved.learn", learnMode); renderLearnSwitch();
+});
+function renderCourseHome() {
+  const res = prog.course || {};
+  const done = COURSE.filter(u => res[u.id] != null).length;
+  const mods = [...new Set(COURSE.map(u => u.mod))];
+  document.getElementById("course-list").innerHTML = `<p class="muted">${t("course.intro")}</p>
+    <p class="eyebrow">${t("course.lessons", { n: COURSE.length, d: done })}</p>
+    ${mods.map(m => { const us = COURSE.filter(u => u.mod === m); return `<div class="mod-head"><b>Richtgraad ${m.split(".")[0]} · module ${m}</b><span class="lvl">${us[0].lvl}</span></div>
+      <div class="theme-grid">${us.map(u => { const sc = res[u.id]; return `<button class="theme-card unit-card ${sc != null ? "done" : ""}" data-unit="${u.id}"><span class="ico">${sc != null ? "✓" : COURSE.indexOf(u) + 1}</span>
+        <span style="min-width:0"><b>${esc(u.nl)}</b><span class="muted" style="display:block;font-size:.88rem">${esc(nm(u.name))} · ${esc(u.rule.nl)}</span>
+        <span class="meter-sm"><i style="width:${sc || 0}%"></i></span><span class="muted" style="font-size:.78rem">${sc != null ? t("unit.best", { n: sc }) : t("unit.count", { n: u.ex.length })}</span></span></button>`; }).join("")}</div>`; }).join("")}`;
+}
+document.getElementById("course-list").addEventListener("click", e => { const b = e.target.closest("[data-unit]"); if (b) openUnit(b.dataset.unit); });
+function openUnit(id) {
+  curUnit = COURSE.find(u => u.id === id); if (!curUnit) return;
+  unitState = { i: -1, ok: 0, done: [] };
+  document.getElementById("course-list").hidden = true;
+  document.getElementById("unit-view").hidden = false;
+  renderUnit(); window.scrollTo({ top: 0 });
+}
+function closeUnit() {
+  stopAudio(); curUnit = null; unitState = null;
+  document.getElementById("course-list").hidden = false;
+  document.getElementById("unit-view").hidden = true;
+  renderCourseHome();
+}
+function normAns(s) { return norm(String(s)).replace(/['’]/g, "'"); }
+function renderUnit() {
+  const u = curUnit, st = unitState, el = document.getElementById("unit-view");
+  if (!u) return;
+  const head = `<button class="btn small ghost" id="unit-back" style="align-self:flex-start">${t("unit.back")}</button>
+    <div class="theme-head"><span class="ico">${COURSE.indexOf(u) + 1}</span><div style="min-width:0"><p class="eyebrow">Richtgraad ${u.mod.split(".")[0]} · module ${u.mod} · ${u.lvl}</p><h2>${esc(u.nl)}</h2><p class="muted" style="font-size:.9rem">${esc(nm(u.name))}</p></div></div>`;
+  if (st.i < 0) {
+    el.innerHTML = head + `<div class="card rule-card"><p class="eyebrow">${t("unit.rule")} · Taalregel</p><h3>${esc(u.rule.nl)}</h3><p class="ex-line">${esc(u.rule.ex)} ${speakBtn(u.rule.ex.split("·")[0].split("—")[0])}</p><p>${esc(nm(u.rule.tr))}</p></div>
+      <button class="btn primary block" id="unit-start">${t("unit.start")} (${u.ex.length})</button>`;
+    el.querySelector("#unit-start").onclick = () => { st.i = 0; renderUnit(); };
+    el.querySelector("#unit-back").onclick = closeUnit;
+    return;
+  }
+  if (st.i >= u.ex.length) {
+    const scored = u.ex.filter(x => !["speak", "write"].includes(x.t)).length;
+    const pct = Math.round(100 * st.ok / Math.max(1, scored));
+    prog.course = prog.course || {};
+    prog.course[u.id] = Math.max(prog.course[u.id] || 0, pct);
+    store.set("ved.progress", prog); logPractice("theme"); addXP(5);
+    const nextU = COURSE[COURSE.indexOf(u) + 1];
+    el.innerHTML = head + `<div class="card" style="display:flex;flex-direction:column;gap:14px"><p class="eyebrow">${t("unit.done")}</p><h2>${t("unit.score", { n: pct })}</h2>
+      <div class="row"><button class="btn" id="unit-redo">${t("unit.again")}</button>${nextU ? `<button class="btn primary" id="unit-next">${t("unit.next")}</button>` : ""}</div></div>`;
+    el.querySelector("#unit-back").onclick = closeUnit;
+    el.querySelector("#unit-redo").onclick = () => openUnit(u.id);
+    if (nextU) el.querySelector("#unit-next").onclick = () => openUnit(nextU.id);
+    return;
+  }
+  const x = u.ex[st.i];
+  const bar = u.ex.map((_, k) => `<i class="${k < st.i ? (st.done[k] === false ? "ko" : "ok") : k === st.i ? "now" : ""}"></i>`).join("");
+  el.innerHTML = head + `<div class="card" style="display:flex;flex-direction:column;gap:14px">
+    <div class="row" style="justify-content:space-between"><span class="eyebrow">${t("unit.ex", { a: st.i + 1, b: u.ex.length })}</span><span class="tag">${{ mc: "meerkeuze", gap: "invullen", order: "zinsbouw", listen: "luisteren", speak: "spreken", write: "schrijven" }[x.t]}</span></div>
+    <div class="progress">${bar}</div>
+    <div class="instr"><b>${insNl[x.t]}</b><span class="muted">${t("ins." + x.t)}</span></div>
+    <div id="ex-body" style="display:flex;flex-direction:column;gap:12px"></div>
+    <div id="ex-fb"></div></div>`;
+  el.querySelector("#unit-back").onclick = closeUnit;
+  const body = el.querySelector("#ex-body"), fb = el.querySelector("#ex-fb");
+  const finish = (ok, correctText) => {
+    st.done[st.i] = ok; if (ok === true) { st.ok++; addXP(2); }
+    fb.innerHTML = `<div class="feedback ${ok === false ? "ko" : "ok"} pop">${ok === null ? "" : `<b>${ok ? t("ch.ok") : t("ch.was") + esc(correctText)}</b>`}
+      ${correctText ? `<div class="row">${speakBtn(correctText, t("ch.hear"))}</div>` : ""}
+      <button class="btn primary block" id="ex-next">${st.i < u.ex.length - 1 ? t("next") + " →" : t("ch.result")}</button></div>`;
+    const n = fb.querySelector("#ex-next"); n.onclick = () => { stopAudio(); st.i++; renderUnit(); window.scrollTo({ top: 0, behavior: "smooth" }); };
+    n.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  };
+  const fill = (q, ans) => q.replace("___", `<u>${esc(ans)}</u>`);
+  if (x.t === "mc" || x.t === "listen") {
+    body.innerHTML = (x.t === "listen" ? `<button class="btn dark" id="ex-hear">▶ ${t("pairs.listen").replace("▶ ", "")}</button><p class="q-prompt">${esc(x.q)}</p>` : `<p class="q-prompt big">${esc(x.q).replace("___", "<span class='blank'>____</span>")}</p>`)
+      + `<div class="opts">${x.o.map((o, k) => `<button class="opt" data-k="${k}">${esc(o)}</button>`).join("")}</div>`;
+    if (x.t === "listen") { const h = body.querySelector("#ex-hear"); h.onclick = () => speak(x.s); speak(x.s); }
+    body.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+      const ok = +b.dataset.k === x.a;
+      body.querySelectorAll(".opt").forEach((y, j) => { y.disabled = true; if (j === x.a) y.classList.add("ok"); else if (y === b) y.classList.add("ko"); });
+      finish(ok, x.t === "mc" ? x.q.replace("___", x.o[x.a]).replace(/\s*\(.*?\)\s*$/, "") : x.s);
+      if (x.t === "listen") body.insertAdjacentHTML("beforeend", `<p class="muted" style="font-size:.9rem">${esc(x.s)}</p>`);
+    });
+  } else if (x.t === "gap") {
+    body.innerHTML = `<p class="q-prompt big">${esc(x.q).replace("___", "<span class='blank'>____</span>")}</p>
+      <form class="answer-row" id="gap-form" autocomplete="off"><input type="text" id="gap-in" placeholder="${t("ch.placeholder")}" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="btn primary" type="submit">${t("ch.check")}</button></form>`;
+    const inp = body.querySelector("#gap-in"); inp.focus({ preventScroll: true });
+    body.querySelector("#gap-form").onsubmit = e => {
+      e.preventDefault(); if (fb.innerHTML) return; const v = normAns(inp.value); if (!v) return;
+      const ok = x.a.some(a => normAns(a) === v); inp.disabled = true;
+      body.querySelector(".q-prompt").innerHTML = fill(x.q.replace(/\s*\(.*?\)\s*$/, ""), x.a[0]);
+      finish(ok, x.q.replace("___", x.a[0]).replace(/\s*\(.*?\)\s*$/, ""));
+    };
+  } else if (x.t === "order") {
+    if (!st.pool || st.poolFor !== st.i) { st.poolFor = st.i; st.pool = shuffle(x.w.map((w, k) => ({ w, k }))); st.pick = []; }
+    const draw = () => {
+      body.innerHTML = `<div class="build">${st.pick.map((p, j) => `<button class="chipw on" data-j="${j}">${esc(p.w)}</button>`).join("") || `<span class="muted">…</span>`}</div>
+        <div class="bank">${st.pool.map((p, j) => st.pick.includes(p) ? `<span class="chipw ghost">${esc(p.w)}</span>` : `<button class="chipw" data-p="${j}">${esc(p.w)}</button>`).join("")}</div>
+        <div class="row"><button class="btn primary" id="ord-check" ${st.pick.length === x.w.length ? "" : "disabled"}>${t("ch.check")}</button><button class="btn ghost" id="ord-clear">${t("order.clear")}</button></div>`;
+      body.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { if (fb.innerHTML) return; st.pick.push(st.pool[+b.dataset.p]); draw(); });
+      body.querySelectorAll("[data-j]").forEach(b => b.onclick = () => { if (fb.innerHTML) return; st.pick.splice(+b.dataset.j, 1); draw(); });
+      body.querySelector("#ord-clear").onclick = () => { if (fb.innerHTML) return; st.pick = []; draw(); };
+      body.querySelector("#ord-check").onclick = () => {
+        if (fb.innerHTML) return;
+        const said = st.pick.map(p => p.w).join(" ");
+        const ok = x.a.some(a => normAns(a) === normAns(said));
+        body.querySelectorAll("button").forEach(b => b.disabled = true);
+        finish(ok, ok ? x.a.find(a => normAns(a) === normAns(said)) : x.a[0]);
+      };
+    };
+    draw();
+  } else if (x.t === "speak") {
+    body.innerHTML = pronHTML(x.s, "") + (micBannerHTML() ? `<div class="mic-banner">${micBannerHTML()}</div>` : "") + `<button class="btn" id="speak-done">${t("unit.done1")}</button>`;
+    body.querySelector("#speak-done").onclick = () => { body.querySelector("#speak-done").hidden = true; finish(null, ""); };
+    body.addEventListener("scored", () => { if (!fb.innerHTML) { body.querySelector("#speak-done").hidden = true; finish(null, ""); } });
+  } else if (x.t === "write") {
+    const key = "ved.write." + u.id;
+    body.innerHTML = `<div class="task"><p><b>${esc(x.nl)}</b></p><p class="muted">${esc(nm(x.tr))}</p></div>
+      <textarea id="write-in" placeholder="${t("write.ph")}" spellcheck="false" style="min-height:160px"></textarea>
+      <div class="row" style="justify-content:space-between"><span class="status" id="write-count"></span><button class="btn primary" id="write-check">${t("write.check")}</button></div>
+      <div id="write-out" style="display:flex;flex-direction:column;gap:10px"></div>`;
+    const ta = body.querySelector("#write-in"), cnt = body.querySelector("#write-count");
+    ta.value = store.get(key, "");
+    const wc = () => ta.value.trim().split(/\s+/).filter(Boolean).length;
+    const upd = () => { cnt.textContent = t("write.count", { n: wc(), m: x.min }); store.set(key, ta.value); };
+    ta.oninput = upd; upd();
+    body.querySelector("#write-check").onclick = async () => {
+      const text = ta.value.trim(); if (!text) { ta.focus(); return; }
+      const low = text.toLowerCase();
+      const checks = [[wc() >= x.min, t("write.len", { m: x.min })], ...x.need.map(n => [n.split("|").some(p => low.includes(p)), t("write.use", { w: n.split("|").join(" / ") })]), [/^[A-ZÀ-Ý]/.test(text) && /[.!?]$/.test(text), t("write.form")]];
+      const out = body.querySelector("#write-out");
+      out.innerHTML = `<div class="card checklist"><p class="eyebrow">${t("write.list")}</p>${checks.map(([ok, l]) => `<p>${ok ? "✓" : "✗"} ${esc(l)}</p>`).join("")}</div>
+        <div id="write-claude"></div>
+        <details class="fold card"><summary style="padding:14px 18px">${t("write.model")}</summary><div class="fold-body"><p>${esc(x.model)}</p>${speakBtn(x.model)}</div></details>`;
+      const allOk = checks.every(c => c[0]);
+      if (sample) {
+        const wcEl = out.querySelector("#write-claude"); wcEl.innerHTML = `<p class="status">${t("write.claude")}</p>`;
+        const ln = LANG_NAME[LANG];
+        const prompt = `Eres profesor de NT2 en un CVO de Flandes. Corrige la tarea de escritura de un alumno de nivel ${u.lvl} cuya lengua es el ${ln}.
+TAREA: ${x.nl}
+TEXTO DEL ALUMNO: ${text}
+Responde SOLO con JSON: {"cijfer": número de 0 a 10 según contenido, gramática y vocabulario para el nivel ${u.lvl},"goed":"lo que está bien, una frase en ${ln}","verbeterd":"el texto del alumno corregido en neerlandés de Bélgica correcto y natural, cambiando lo mínimo","fouten":["cada error importante explicado en ${ln} en una frase corta, máximo 5"],"tip":"un consejo concreto en ${ln}"}`;
+        try {
+          const r = await sample.json(prompt, { cache: false });
+          const f = Array.isArray(r.fouten) ? r.fouten : [];
+          wcEl.innerHTML = `<div class="feedback ${(+r.cijfer || 0) >= 6 ? "ok" : "ko"} pop"><b>${t("write.grade", { n: esc(r.cijfer) })}</b>${r.goed ? `<p>${esc(r.goed)}</p>` : ""}
+            ${r.verbeterd ? `<p class="eyebrow">${t("write.fixed")}</p><p class="diff">${diffWords(String(r.verbeterd), text).html}</p>` : ""}
+            ${f.length ? `<ul>${f.map(y => `<li>${esc(y)}</li>`).join("")}</ul>` : ""}${r.tip ? `<p class="muted">${esc(r.tip)}</p>` : ""}</div>`;
+        } catch (e) { wcEl.innerHTML = `<p class="status">${t("err.claude")}</p>`; if (e && HIDE.includes(e.code)) sample = null; }
+      }
+      if (!fb.innerHTML) finish(null, "");
+      if (allOk) addXP(5);
+    };
+  }
+}
+
 /* ---------- Selector de voz */
 const VOICE_SAMPLE = "Goeiedag! Welkom bij Vlaams elke dag. Vandaag lezen we samen het nieuws uit Limburg.";
 window.__renderVoicePicker = function () {
@@ -2181,9 +2588,11 @@ function renderHome() {
   cta.querySelector("span").textContent = !next ? t("home.cta.again") : next[0] === "verbs" ? t("home.cta.start") : t("home.cta.next", { x: t("r." + next[0]).toLowerCase() });
   const c = srsCounts(), verbsDone = prog.history[TODAY] != null;
   const phrase = pickPhrases("frases:" + TODAY)[0];
-  const tile = (goto, icon, title, sub, foot, wide) => `<button class="tile ${wide ? "wide" : ""}" data-goto="${goto}"><span class="ico"><svg class="i"><use href="#${icon}"/></svg></span><b>${title}</b><span class="t-sub">${sub}</span><span class="t-foot">${foot}<svg class="i"><use href="#i-arrow"/></svg></span></button>`;
+  const tile = (goto, icon, title, sub, foot, wide, learn) => `<button class="tile ${wide ? "wide" : ""}" data-goto="${goto}" ${learn ? `data-learn="${learn}"` : ""}><span class="ico"><svg class="i"><use href="#${icon}"/></svg></span><b>${title}</b><span class="t-sub">${sub}</span><span class="t-foot">${foot}<svg class="i"><use href="#i-arrow"/></svg></span></button>`;
+  const cDone = COURSE.filter(u => (prog.course || {})[u.id] != null).length;
   document.getElementById("tiles").innerHTML =
-    tile("temas", "i-layers", t("tile.themes"), esc(t("tile.themes.sub")), t("tile.themes.foot", { n: THEMES.length }), true) +
+    tile("temas", "i-verbs", t("tile.course"), esc(t("tile.course.sub")), t("course.lessons", { n: COURSE.length, d: cDone }), true, "course") +
+    tile("temas", "i-layers", t("tile.themes"), esc(t("tile.themes.sub")), t("tile.themes.foot", { n: THEMES.length }), true, "themes") +
     tile("kranten", "i-news", t("tile.news"), esc(NEWS[0] ? NEWS[0].nl : "Vandaag in Limburg"), t("tile.news.foot", { n: NEWS.length })) +
     tile("uitspraak", "i-mic", t("tile.speak"), "«" + esc(phrase[0]) + "»", t("tile.speak.foot")) +
     tile("werkwoorden", "i-verbs", t("tile.verbs"), verbsDone ? t("tile.verbs.done", { n: prog.history[TODAY] }) : t("tile.verbs.todo"), c.due ? t("tile.verbs.due", { n: c.due }) : t("tile.verbs.count", { n: VERBS.length })) +
@@ -2197,6 +2606,7 @@ function rerenderAll() {
   renderStats(); renderRoutine(); renderChallenge(); renderVerbs(); renderSrsSummary();
   renderNewsList(); renderNews(); renderPhrases(); newPair(); renderSounds(); refreshMicBanner();
   renderThemesList(); if (curTheme) renderTheme();
+  renderLearnSwitch(); renderCourseHome(); if (curUnit) renderUnit();
   if (!test) renderTestIntro();
   window.__renderVoicePicker();
   document.getElementById("guide-slot").innerHTML = GUIDE();
