@@ -837,7 +837,16 @@ if (hasTTS) { pickVoice(); speechSynthesis.addEventListener ? speechSynthesis.ad
 
 let AUDIO = null, currentAudio = null;
 const PIPER = "__piper__";
-const audioOn = () => !!AUDIO && [null, PIPER].includes(store.get("ved.voice", null));
+/* Por defecto: si el dispositivo tiene una voz neuronal de Microsoft o Apple (p. ej. «Dena/Arnaud Online (Natural)» en Edge),
+   suena más humana que los audios de Piper y se usa esa; si no, los audios de Piper. */
+const naturalDevice = () => voices.find(v => isNatural(v) && /^nl/i.test(v.lang));
+const audioOn = () => {
+  if (!AUDIO) return false;
+  const saved = store.get("ved.voice", null);
+  if (saved === PIPER) return true;
+  if (saved) return false;
+  return !naturalDevice();
+};
 try {
   fetch("audio/manifest.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(m => {
     if (m && m.files) { AUDIO = m.files; if (window.__renderVoicePicker) window.__renderVoicePicker(); if (window.__rerender) window.__rerender(); }
@@ -879,10 +888,13 @@ function speak(text, onend, rate = 0.95, who = "") {
 function ttsPart(part, next, onend, rate, who, token) {
   if (!hasTTS) { next(); return; }
   const u = new SpeechSynthesisUtterance(part);
-  u.lang = voice ? voice.lang : "nl-BE";
-  if (voice) u.voice = voice;
+  /* Para los papeles masculinos de los diálogos, una voz masculina natural si existe (Arnaud en Edge, Maarten, Xander…). */
+  const male = who === "rdh" && voices.find(v => /arnaud|maarten|xander|rik\b/i.test(v.name) && (isNatural(v) || !isNatural(voice || {})));
+  const v = male || voice;
+  u.lang = v ? v.lang : "nl-BE";
+  if (v) u.voice = v;
   u.rate = Math.min(1.6, rate * userRate);
-  u.pitch = who === "rdh" ? 0.8 : 1;
+  u.pitch = who === "rdh" && !male ? 0.8 : 1;
   u.onend = () => setTimeout(next, 220);
   u.onerror = e => { if (e.error === "interrupted" || e.error === "canceled") { if (onend && token === speakToken) onend(); } else next(); };
   speechSynthesis.speak(u);
