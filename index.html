@@ -433,10 +433,55 @@ footer{padding-bottom:8px;opacity:.8}
   .ring,.ring svg{width:86px;height:86px}
   .tile{min-height:150px;padding:16px}
 }
+/* Plan de 90 días */
+nav.tabs{grid-template-columns:repeat(6,1fr);width:min(600px,calc(100% - 24px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px)))}
+nav.tabs button{font-size:.64rem;padding:8px 1px}
+.plan-hero{position:relative;background:var(--night);color:var(--night-ink);border-radius:var(--r);padding:22px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow-lg)}
+.plan-hero h2{color:var(--night-ink)}
+.plan-hero .muted{color:var(--night-muted)}
+.plan-hero .eyebrow{color:var(--accent)}
+.plan-bar{height:10px;border-radius:99px;background:color-mix(in srgb,var(--night-ink) 14%,transparent);overflow:hidden}
+.plan-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent-2),var(--accent));border-radius:inherit}
+.today-focus{display:flex;flex-direction:column;gap:6px;padding:18px;border-left:5px solid var(--accent)}
+.psteps{display:flex;flex-direction:column;gap:8px}
+.pstep{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:14px;background:var(--raise)}
+.pstep label{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;cursor:pointer}
+.pstep input[type=checkbox]{width:22px;height:22px;accent-color:var(--good)}
+.pstep .why{display:block;color:var(--muted);font-size:.84rem;line-height:1.35}
+.pstep.done{background:var(--good-bg)}
+.pstep.done label b{text-decoration:line-through;text-decoration-color:var(--good)}
+.pstep textarea{min-height:0;font-size:.95rem}
+.recall-y{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tech-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tech{display:flex;flex-direction:column;gap:4px;padding:12px 14px;border-radius:14px;background:var(--raise);font-size:.88rem;line-height:1.4}
+.tech b{font-size:.95rem}
+.phase{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:14px;background:var(--raise);border:2px solid transparent}
+.phase.now{border-color:var(--accent);background:var(--soft)}
+.met-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.met{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:14px;background:var(--raise);font-size:.8rem;min-width:0}
+.met b{font-family:var(--f-display);font-size:1.4rem}
+.met input{padding:6px 8px;min-height:0;font-size:1.1rem;width:100%}
+.met-table{width:100%;border-collapse:collapse;font-size:.84rem;text-align:center}
+.met-table th,.met-table td{padding:6px 4px;border-bottom:1px solid var(--line)}
+.met-table th{color:var(--muted);font-weight:700}
+.met-table tr.cur td{font-weight:700;background:var(--soft)}
+.plan-cal{display:grid;grid-template-columns:2em repeat(7,1fr);gap:4px;align-items:center;max-width:420px}
+.plan-cal .wk{font-size:.72rem;color:var(--muted);text-align:right;padding-right:4px}
+.plan-cal i{aspect-ratio:1;border-radius:6px;background:var(--raise);border:1px solid var(--line)}
+.plan-cal i.part{background:color-mix(in srgb,var(--good) 35%,var(--raise))}
+.plan-cal i.full{background:var(--good);border-color:var(--good)}
+.plan-cal i.today{outline:2px solid var(--accent);outline-offset:1px}
+.plan-cal i.future{opacity:.55}
+.plan-cal i.none{visibility:hidden}
+.card.sunday{border:2px solid var(--accent)}
+.tile.wide[data-goto=plan]{background:linear-gradient(150deg,var(--red-soft),var(--surface))}
+.tile.wide[data-goto=plan] .ico{background:linear-gradient(145deg,#F2646B,var(--red));color:#fff}
+@media (max-width:480px){.tech-grid{grid-template-columns:1fr}.met-grid{grid-template-columns:1fr 1fr}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
   <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFDD55"/><stop offset="1" stop-color="#F7C600"/></linearGradient>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 14h2M14 14h2M8 17h2"/></symbol>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
   <symbol id="i-verbs" viewBox="0 0 24 24"><path d="M4 4h11a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"/><path d="M8 9h7M8 13h5"/></symbol>
   <symbol id="i-news" viewBox="0 0 24 24"><path d="M4 5h12v14a2 2 0 0 0 2 2H6a2 2 0 0 1-2-2z"/><path d="M16 9h4v10a2 2 0 0 1-2 2M8 9h4M8 13h4M8 17h2"/></symbol>
@@ -469,6 +514,7 @@ footer{padding-bottom:8px;opacity:.8}
 
   <nav class="tabs" role="tablist">
     <button role="tab" aria-selected="true" data-tab="inicio"><svg class="i"><use href="#i-home"/></svg><span data-i18n="nav.home">Inicio</span></button>
+    <button role="tab" aria-selected="false" data-tab="plan"><svg class="i"><use href="#i-cal"/></svg><span data-i18n="nav.plan">Plan</span></button>
     <button role="tab" aria-selected="false" data-tab="temas"><svg class="i"><use href="#i-layers"/></svg><span data-i18n="nav.themes">Temas</span></button>
     <button role="tab" aria-selected="false" data-tab="werkwoorden"><svg class="i"><use href="#i-verbs"/></svg><span data-i18n="nav.verbs">Verbos</span></button>
     <button role="tab" aria-selected="false" data-tab="kranten"><svg class="i"><use href="#i-news"/></svg><span data-i18n="nav.news">Noticias</span></button>
@@ -494,6 +540,11 @@ footer{padding-bottom:8px;opacity:.8}
     <div class="card" id="routine" style="display:flex;flex-direction:column;gap:12px"></div>
     <p class="muted" style="font-size:.85rem;text-align:center" id="home-best"></p>
     <span id="st-best" hidden>0</span>
+  </section>
+
+  <!-- PLAN 90 DÍAS -->
+  <section class="panel" id="p-plan" hidden>
+    <div id="plan-root" style="display:flex;flex-direction:column;gap:14px"></div>
   </section>
 
   <!-- TEMAS -->
@@ -1064,7 +1115,7 @@ document.addEventListener("click", e => { const b = e.target.closest("[data-say]
 
 /* ---------- Pestañas */
 const tabs = [...document.querySelectorAll("nav.tabs button")];
-const TABS = ["inicio", "temas", "werkwoorden", "kranten", "uitspraak", "test"];
+const TABS = ["inicio", "plan", "temas", "werkwoorden", "kranten", "uitspraak", "test"];
 let currentTab = "inicio";
 function showTab(name) {
   if (name === "uitdaging") name = "werkwoorden";
@@ -1073,6 +1124,7 @@ function showTab(name) {
   currentTab = name;
   tabs.forEach(t => t.setAttribute("aria-selected", String(t.dataset.tab === name)));
   TABS.forEach(n => document.getElementById("p-" + n).hidden = n !== name);
+  if (name === "plan" && window.__homeReady) renderPlan();
 }
 function stopAudio() { speakToken++; if (currentAudio) { currentAudio.pause(); currentAudio = null; } if (hasTTS) speechSynthesis.cancel(); if (window.__stopPlayers) window.__stopPlayers(); }
 tabs.forEach(t => t.addEventListener("click", () => { showTab(t.dataset.tab); window.scrollTo({ top: 0 }); }));
@@ -2562,17 +2614,19 @@ function openUnit(id) {
   renderUnit(); window.scrollTo({ top: 0 });
 }
 function closeUnit() {
+  const wasMix = curUnit && curUnit.mix;
   stopAudio(); curUnit = null; unitState = null;
   document.getElementById("course-list").hidden = false;
   document.getElementById("unit-view").hidden = true;
   renderCourseHome();
+  if (wasMix) { showTab("plan"); window.scrollTo({ top: 0 }); }
 }
 function normAns(s) { return norm(String(s)).replace(/['’]/g, "'"); }
 function renderUnit() {
   const u = curUnit, st = unitState, el = document.getElementById("unit-view");
   if (!u) return;
-  const head = `<button class="btn small ghost" id="unit-back" style="align-self:flex-start">${t("unit.back")}</button>
-    <div class="theme-head"><span class="ico">${COURSE.indexOf(u) + 1}</span><div style="min-width:0"><p class="eyebrow">Richtgraad ${u.mod.split(".")[0]} · module ${u.mod} · ${u.lvl}</p><h2>${esc(u.nl)}</h2><p class="muted" style="font-size:.9rem">${esc(nm(u.name))}</p></div></div>`;
+  const head = `<button class="btn small ghost" id="unit-back" style="align-self:flex-start">${u.mix ? t("mix.back") : t("unit.back")}</button>
+    <div class="theme-head"><span class="ico">${u.mix ? "↻" : COURSE.indexOf(u) + 1}</span><div style="min-width:0"><p class="eyebrow">${u.mix ? t("mix.eyebrow") : `Richtgraad ${u.mod.split(".")[0]} · module ${u.mod} · ${u.lvl}`}</p><h2>${esc(u.nl)}</h2><p class="muted" style="font-size:.9rem">${esc(nm(u.name))}</p></div></div>`;
   if (st.i < 0) {
     el.innerHTML = head + `<div class="card rule-card"><p class="eyebrow">${t("unit.rule")} · Taalregel</p><h3>${esc(u.rule.nl)}</h3><p class="ex-line">${esc(u.rule.ex)} ${speakBtn(u.rule.ex.split("·")[0].split("—")[0])}</p><p>${esc(nm(u.rule.tr))}</p></div>
       <button class="btn primary block" id="unit-start">${t("unit.start")} (${u.ex.length})</button>`;
@@ -2583,6 +2637,7 @@ function renderUnit() {
   if (st.i >= u.ex.length) {
     const scored = u.ex.filter(x => !["speak", "write"].includes(x.t)).length;
     const pct = Math.round(100 * st.ok / Math.max(1, scored));
+    if (u.mix) return renderMixDone(el, head, pct);
     prog.course = prog.course || {};
     prog.course[u.id] = Math.max(prog.course[u.id] || 0, pct);
     store.set("ved.progress", prog); logPractice("theme"); addXP(5);
@@ -2597,7 +2652,7 @@ function renderUnit() {
   const x = u.ex[st.i];
   const bar = u.ex.map((_, k) => `<i class="${k < st.i ? (st.done[k] === false ? "ko" : "ok") : k === st.i ? "now" : ""}"></i>`).join("");
   el.innerHTML = head + `<div class="card" style="display:flex;flex-direction:column;gap:14px">
-    <div class="row" style="justify-content:space-between"><span class="eyebrow">${t("unit.ex", { a: st.i + 1, b: u.ex.length })}</span><span class="tag">${{ mc: "meerkeuze", gap: "invullen", order: "zinsbouw", listen: "luisteren", speak: "spreken", write: "schrijven" }[x.t]}</span></div>
+    <div class="row" style="justify-content:space-between"><span class="eyebrow">${t("unit.ex", { a: st.i + 1, b: u.ex.length })}</span>${u.mix ? `<span class="muted" style="font-size:.8rem">${t("mix.from", { x: esc(COURSE.find(c => c.id === x.uid).nl) })}</span>` : ""}<span class="tag">${{ mc: "meerkeuze", gap: "invullen", order: "zinsbouw", listen: "luisteren", speak: "spreken", write: "schrijven" }[x.t]}</span></div>
     <div class="progress">${bar}</div>
     <div class="instr"><b>${insNl[x.t]}</b><span class="muted">${t("ins." + x.t)}</span></div>
     <div id="ex-body" style="display:flex;flex-direction:column;gap:12px"></div>
@@ -2606,6 +2661,7 @@ function renderUnit() {
   const body = el.querySelector("#ex-body"), fb = el.querySelector("#ex-fb");
   const finish = (ok, correctText) => {
     st.done[st.i] = ok; if (ok === true) { st.ok++; addXP(2); }
+    if (u.mix && ok !== null) mixUpdate(x.key, ok);
     fb.innerHTML = `<div class="feedback ${ok === false ? "ko" : "ok"} pop">${ok === null ? "" : `<b>${ok ? t("ch.ok") : t("ch.was") + esc(correctText)}</b>`}
       ${correctText ? `<div class="row">${speakBtn(correctText, t("ch.hear"))}</div>` : ""}
       <button class="btn primary block" id="ex-next">${st.i < u.ex.length - 1 ? t("next") + " →" : t("ch.result")}</button></div>`;
@@ -2696,6 +2752,375 @@ Responde SOLO con JSON: {"cijfer": número de 0 a 10 según contenido, gramátic
   }
 }
 
+/* ---------- Plan intensivo de 90 días
+   Repetición espaciada (+1, +3, +7, +14, +30 días), intercalación (repaso mixto de varias lecciones),
+   técnica Feynman (explicación semanal) y recuerdo activo (escribir de memoria antes de mirar). */
+Object.assign(I18N, {
+  "nav.plan": ["Plan", "Plano", "Plan", "Plan"],
+  "plan.title": ["Plan de 90 días", "Plano de 90 dias", "90-day plan", "Plan de 90 jours"],
+  "plan.intro": ["De A1 a un B2 oral en 90 días, con 90–120 minutos al día. Una persona que estudia en un CVO suele tardar 2–3 años: así llegas al 1 % superior.", "Do A1 a um B2 oral em 90 dias, com 90–120 minutos por dia. Quem estuda num CVO costuma levar 2–3 anos: assim você chega ao 1 % superior.", "From A1 to spoken B2 in 90 days, with 90–120 minutes a day. A typical CVO learner needs 2–3 years: this puts you in the top 1 %.", "De A1 à un B2 oral en 90 jours, avec 90 à 120 minutes par jour. En CVO, on met souvent 2 à 3 ans : voilà comment entrer dans le top 1 %."],
+  "plan.start": ["Empezar hoy el día 1", "Começar hoje o dia 1", "Start day 1 today", "Commencer le jour 1 aujourd'hui"],
+  "plan.tech": ["Las 4 técnicas", "As 4 técnicas", "The 4 techniques", "Les 4 techniques"],
+  "tech.recall": ["Recuerdo activo", "Memória ativa", "Active recall", "Rappel actif"],
+  "tech.recall.d": ["Nunca relees: ves la frase en tu idioma y la dices en neerlandés en voz alta.", "Nunca releia: veja a frase no seu idioma e diga em holandês em voz alta.", "Never reread: see the sentence in your language and say it in Dutch, aloud.", "Ne relis jamais : vois la phrase dans ta langue et dis-la en néerlandais, à voix haute."],
+  "tech.srs": ["Repetición espaciada", "Repetição espaçada", "Spaced repetition", "Répétition espacée"],
+  "tech.srs.d": ["Lo que fallas vuelve mañana; lo que aciertas, a los 3, 7, 14 y 30 días.", "O que você erra volta amanhã; o que acerta, após 3, 7, 14 e 30 dias.", "What you miss comes back tomorrow; what you get right, after 3, 7, 14 and 30 days.", "Ce que tu rates revient demain ; ce que tu réussis, après 3, 7, 14 et 30 jours."],
+  "tech.mix": ["Intercalación", "Intercalação", "Interleaving", "Entrelacement"],
+  "tech.mix.d": ["El repaso mixto alterna ejercicios de varias lecciones: tu cerebro tiene que elegir la regla.", "A revisão mista alterna exercícios de várias lições: seu cérebro precisa escolher a regra.", "Mixed review alternates exercises from several lessons: your brain has to choose the rule.", "La révision mixte alterne des exercices de plusieurs leçons : ton cerveau doit choisir la règle."],
+  "tech.feyn": ["Técnica Feynman", "Técnica Feynman", "Feynman technique", "Technique Feynman"],
+  "tech.feyn.d": ["Cada domingo explicas la regla de la semana con palabras sencillas. Donde te atascas, hay una laguna.", "Todo domingo você explica a regra da semana com palavras simples. Onde trava, há uma lacuna.", "Every Sunday you explain the week's rule in simple words. Where you get stuck, there's a gap.", "Chaque dimanche, tu expliques la règle de la semaine simplement. Là où tu bloques, il y a une lacune."],
+  "plan.day": ["Día {n} de 90", "Dia {n} de 90", "Day {n} of 90", "Jour {n} sur 90"],
+  "plan.week": ["Semana {n}", "Semana {n}", "Week {n}", "Semaine {n}"],
+  "plan.phase": ["Fase {n}", "Fase {n}", "Phase {n}", "Phase {n}"],
+  "plan.goal": ["Hito de la fase", "Marco da fase", "Phase milestone", "Objectif de la phase"],
+  "plan.todayFocus": ["Foco de hoy", "Foco de hoje", "Today's focus", "Focus du jour"],
+  "plan.session": ["Sesión de hoy · {m} min", "Sessão de hoje · {m} min", "Today's session · {m} min", "Séance du jour · {m} min"],
+  "plan.of": ["{a} de {b}", "{a} de {b}", "{a} of {b}", "{a} sur {b}"],
+  "plan.allDone": ["Sesión completa. Dormir bien también es estudiar: la memoria se consolida de noche.", "Sessão completa. Dormir bem também é estudar: a memória se consolida à noite.", "Session complete. Sleeping well is studying too: memory consolidates at night.", "Séance terminée. Bien dormir, c'est aussi apprendre : la mémoire se consolide la nuit."],
+  "plan.go": ["Ir", "Ir", "Go", "Aller"],
+  "plan.notes.ph": ["Escribe aquí…", "Escreva aqui…", "Write here…", "Écris ici…"],
+  "plan.yesterday": ["Ayer apuntaste una frase que creías que ibas a olvidar. ¿La recuerdas? Dila en voz alta y luego compruébalo.", "Ontem você anotou uma frase que achava que ia esquecer. Lembra dela? Diga em voz alta e depois confira.", "Yesterday you noted a sentence you thought you'd forget. Do you remember it? Say it aloud, then check.", "Hier, tu as noté une phrase que tu pensais oublier. Tu t'en souviens ? Dis-la à voix haute, puis vérifie."],
+  "plan.check": ["Comprobar", "Conferir", "Check", "Vérifier"],
+  "s.recall": ["Calentamiento: recuerdo libre", "Aquecimento: lembrança livre", "Warm-up: free recall", "Échauffement : rappel libre"],
+  "s.recall.why": ["Sin mirar nada, escribe en neerlandés todo lo que recuerdes de ayer.", "Sem olhar nada, escreva em holandês tudo o que lembrar de ontem.", "Without looking, write in Dutch everything you remember from yesterday.", "Sans rien regarder, écris en néerlandais tout ce dont tu te souviens d'hier."],
+  "s.cards": ["Tarjetas en voz alta", "Cartões em voz alta", "Cards, aloud", "Cartes à voix haute"],
+  "s.cards.why": ["Reto de verbos y tarjetas de los temas. Responde siempre en voz alta antes de mirar.", "Desafio de verbos e cartões dos temas. Responda sempre em voz alta antes de olhar.", "Verb challenge and topic cards. Always answer aloud before looking.", "Défi de verbes et cartes des thèmes. Réponds toujours à voix haute avant de regarder."],
+  "s.block": ["Bloque nuevo intercalado", "Bloco novo intercalado", "New interleaved block", "Nouveau bloc entrelacé"],
+  "s.block.why": ["Una lección del curso y después el repaso mixto, que mezcla lecciones distintas.", "Uma lição do curso e depois a revisão mista, que mistura lições diferentes.", "One course lesson, then the mixed review, which mixes different lessons.", "Une leçon du cours, puis la révision mixte, qui mélange plusieurs leçons."],
+  "s.input": ["Escucha activa", "Escuta ativa", "Active listening", "Écoute active"],
+  "s.input.why": ["Noticias con shadowing: pausa, repite cada frase y apunta 5 frases nuevas.", "Notícias com shadowing: pause, repita cada frase e anote 5 frases novas.", "News with shadowing: pause, repeat each sentence and note 5 new ones.", "Actus en shadowing : pause, répète chaque phrase et note 5 phrases nouvelles."],
+  "s.output": ["Producción oral", "Produção oral", "Speaking output", "Production orale"],
+  "s.output.why": ["Monólogo de 3 minutos grabado, juego de rol o conversación con un tándem.", "Monólogo de 3 minutos gravado, role-play ou conversa com um parceiro.", "A recorded 3-minute monologue, a role-play or a talk with a language partner.", "Monologue de 3 minutes enregistré, jeu de rôle ou échange avec un tandem."],
+  "s.close": ["Cierre: predice tu olvido", "Fechamento: preveja seu esquecimento", "Close: predict what you'll forget", "Clôture : prédis ton oubli"],
+  "s.close.why": ["Escribe la frase de hoy que crees que olvidarás. Mañana la pondrás a prueba.", "Escreva a frase de hoje que você acha que vai esquecer. Amanhã vai testá-la.", "Write today's sentence you think you'll forget. Tomorrow you'll test it.", "Écris la phrase d'aujourd'hui que tu penses oublier. Demain, tu la testeras."],
+  "mix.title": ["Repaso mixto intercalado", "Revisão mista intercalada", "Interleaved mixed review", "Révision mixte entrelacée"],
+  "mix.intro": ["10 ejercicios mezclados de tus lecciones. Lo que fallas vuelve mañana; lo que aciertas, a los +3, +7, +14 y +30 días.", "10 exercícios misturados das suas lições. O que errar volta amanhã; o que acertar, após +3, +7, +14 e +30 dias.", "10 exercises mixed from your lessons. Misses return tomorrow; hits after +3, +7, +14 and +30 days.", "10 exercices mélangés de tes leçons. Les erreurs reviennent demain ; les réussites après +3, +7, +14 et +30 jours."],
+  "mix.stats": ["{d} para repasar hoy · {l} afianzados · {s} vistos", "{d} para revisar hoje · {l} consolidados · {s} vistos", "{d} due today · {l} solid · {s} seen", "{d} à revoir aujourd'hui · {l} acquis · {s} vus"],
+  "mix.start": ["Empezar el repaso mixto", "Começar a revisão mista", "Start mixed review", "Lancer la révision mixte"],
+  "mix.eyebrow": ["Plan de 90 días · repaso mixto", "Plano de 90 dias · revisão mista", "90-day plan · mixed review", "Plan de 90 jours · révision mixte"],
+  "mix.name": ["Ejercicios de varias lecciones, mezclados", "Exercícios de várias lições, misturados", "Exercises from several lessons, mixed", "Exercices de plusieurs leçons, mélangés"],
+  "mix.from": ["Lección: {x}", "Lição: {x}", "Lesson: {x}", "Leçon : {x}"],
+  "mix.done": ["Repaso mixto terminado", "Revisão mista concluída", "Mixed review done", "Révision mixte terminée"],
+  "mix.again": ["Otra ronda", "Outra rodada", "Another round", "Encore une manche"],
+  "mix.back": ["← Volver al plan", "← Voltar ao plano", "← Back to the plan", "← Retour au plan"],
+  "feyn.title": ["Técnica Feynman de la semana", "Técnica Feynman da semana", "This week's Feynman", "Feynman de la semaine"],
+  "feyn.sunday": ["Hoy es domingo: toca explicar y medir.", "Hoje é domingo: hora de explicar e medir.", "It's Sunday: time to explain and measure.", "C'est dimanche : on explique et on mesure."],
+  "feyn.rule": ["Regla que vas a explicar", "Regra que você vai explicar", "Rule to explain", "Règle à expliquer"],
+  "feyn.a": ["1. Explícala como a un niño de 12 años, en tu idioma, sin mirar.", "1. Explique como para uma criança de 12 anos, no seu idioma, sem olhar.", "1. Explain it as if to a 12-year-old, in your language, without looking.", "1. Explique-la comme à un enfant de 12 ans, dans ta langue, sans regarder."],
+  "feyn.b": ["2. Ahora en neerlandés sencillo, con dos ejemplos tuyos.", "2. Agora em holandês simples, com dois exemplos seus.", "2. Now in simple Dutch, with two examples of your own.", "2. Maintenant en néerlandais simple, avec deux exemples à toi."],
+  "feyn.compare": ["3. Comparar con la regla", "3. Comparar com a regra", "3. Compare with the rule", "3. Comparer avec la règle"],
+  "feyn.gap": ["¿Dónde te atascaste o qué te faltó? Esa es tu laguna: vuelve a esa lección y repite la explicación.", "Onde você travou ou o que faltou? Essa é sua lacuna: volte a essa lição e repita a explicação.", "Where did you get stuck or what was missing? That's your gap: go back to that lesson and explain again.", "Où as-tu bloqué, qu'est-ce qui manquait ? C'est ta lacune : reviens à cette leçon et réexplique."],
+  "feyn.claude": ["Claude: busca mis lagunas", "Claude: encontre minhas lacunas", "Claude: find my gaps", "Claude : trouve mes lacunes"],
+  "feyn.ok": ["Bien explicado", "Bem explicado", "Well explained", "Bien expliqué"],
+  "feyn.gaps": ["Lagunas", "Lacunas", "Gaps", "Lacunes"],
+  "feyn.q": ["Pregunta de comprobación", "Pergunta de verificação", "Check question", "Question de contrôle"],
+  "met.title": ["Auditoría semanal", "Auditoria semanal", "Weekly audit", "Bilan de la semaine"],
+  "met.intro": ["Mídelo cada domingo. Graba un monólogo de 1 minuto y cuenta las palabras; escucha un boletín de VRT NWS y estima qué porcentaje entiendes.", "Meça todo domingo. Grave um monólogo de 1 minuto e conte as palavras; ouça um boletim da VRT NWS e estime quanto entende.", "Measure every Sunday. Record a 1-minute monologue and count the words; listen to a VRT NWS bulletin and estimate how much you understand.", "Mesure chaque dimanche. Enregistre un monologue d'une minute et compte les mots ; écoute un flash de VRT NWS et estime ce que tu comprends."],
+  "met.ret": ["Retención", "Retenção", "Retention", "Rétention"],
+  "met.wpm": ["Palabras/min", "Palavras/min", "Words/min", "Mots/min"],
+  "met.err": ["Errores/min", "Erros/min", "Errors/min", "Erreurs/min"],
+  "met.comp": ["Comprensión %", "Compreensão %", "Comprehension %", "Compréhension %"],
+  "met.target": ["Objetivo", "Meta", "Target", "Objectif"],
+  "met.save": ["Guardar semana {n}", "Salvar semana {n}", "Save week {n}", "Enregistrer la semaine {n}"],
+  "met.saved": ["Guardado.", "Salvo.", "Saved.", "Enregistré."],
+  "met.low": ["Retención por debajo del 85 %: frena y repasa antes de añadir material nuevo.", "Retenção abaixo de 85 %: diminua o ritmo e revise antes de adicionar material novo.", "Retention under 85 %: slow down and review before adding new material.", "Rétention sous 85 % : ralentis et révise avant d'ajouter du nouveau."],
+  "met.high": ["Retención por encima del 90 %: puedes subir el ritmo de lecciones nuevas.", "Retenção acima de 90 %: você pode acelerar as lições novas.", "Retention above 90 %: you can speed up new lessons.", "Rétention au-dessus de 90 % : tu peux accélérer les nouvelles leçons."],
+  "met.ok": ["Retención en la zona ideal (85–90 %). Sigue así.", "Retenção na zona ideal (85–90 %). Continue assim.", "Retention in the sweet spot (85–90 %). Keep going.", "Rétention dans la zone idéale (85–90 %). Continue."],
+  "met.none": ["Haz el repaso mixto para medir tu retención.", "Faça a revisão mista para medir sua retenção.", "Do the mixed review to measure your retention.", "Fais la révision mixte pour mesurer ta rétention."],
+  "cal.title": ["Tus 13 semanas", "Suas 13 semanas", "Your 13 weeks", "Tes 13 semaines"],
+  "cal.legend": ["Verde: sesión completa · claro: sesión empezada", "Verde: sessão completa · claro: sessão iniciada", "Green: full session · light: started", "Vert : séance complète · clair : commencée"],
+  "ph.title": ["Las 4 fases", "As 4 fases", "The 4 phases", "Les 4 phases"],
+  "ph.days": ["Días {a}–{b}", "Dias {a}–{b}", "Days {a}–{b}", "Jours {a}–{b}"],
+  "ph.lessons": ["Lecciones", "Lições", "Lessons", "Leçons"],
+  "ph.input": ["Input", "Input", "Input", "Input"],
+  "plan.finished": ["¡Has completado los 90 días! Haz el test de nivel y compara con tu semana 1.", "Você completou os 90 dias! Faça o teste de nível e compare com sua semana 1.", "You've completed the 90 days! Take the level test and compare with week 1.", "Tu as terminé les 90 jours ! Passe le test de niveau et compare avec ta semaine 1."],
+  "plan.reset": ["Reiniciar el plan", "Reiniciar o plano", "Restart the plan", "Recommencer le plan"],
+  "plan.resetQ": ["¿Seguro? Empezarás de nuevo en el día 1 (tus repasos se conservan).", "Tem certeza? Você recomeça no dia 1 (suas revisões são mantidas).", "Are you sure? You'll restart at day 1 (your reviews are kept).", "Sûr ? Tu recommences au jour 1 (tes révisions sont conservées)."],
+  "plan.rules": ["Reglas de oro", "Regras de ouro", "Golden rules", "Règles d'or"],
+  "plan.rule1": ["Habla desde el primer día.", "Fale desde o primeiro dia.", "Speak from day one.", "Parle dès le premier jour."],
+  "plan.rule2": ["Frases enteras, no palabras sueltas.", "Frases inteiras, não palavras soltas.", "Whole sentences, not single words.", "Des phrases entières, pas des mots isolés."],
+  "plan.rule3": ["Cada error que cometes al hablar se convierte en tarjeta ese mismo día.", "Cada erro que você comete ao falar vira cartão no mesmo dia.", "Every speaking mistake becomes a card that same day.", "Chaque erreur à l'oral devient une carte le jour même."],
+  "plan.rule4": ["90 minutos cada día rinden más que 5 horas el sábado. Duerme 7–8 horas.", "90 minutos por dia rendem mais que 5 horas no sábado. Durma 7–8 horas.", "90 minutes every day beats 5 hours on Saturday. Sleep 7–8 hours.", "90 minutes par jour valent mieux que 5 heures le samedi. Dors 7 à 8 heures."],
+  "tile.plan.sub": ["Repetición espaciada, intercalación, Feynman y recuerdo activo: de A1 a B2 en 90 días", "Repetição espaçada, intercalação, Feynman e memória ativa: do A1 ao B2 em 90 dias", "Spaced repetition, interleaving, Feynman and active recall: A1 to B2 in 90 days", "Répétition espacée, entrelacement, Feynman et rappel actif : de A1 à B2 en 90 jours"],
+  "tile.plan.foot": ["Empezar", "Começar", "Start", "Commencer"],
+  "tile.plan.today": ["{a}/{b} pasos hoy", "{a}/{b} passos hoje", "{a}/{b} steps today", "{a}/{b} étapes aujourd'hui"]
+});
+
+const PLAN_LEN = 90;
+const MIX_DAYS = [1, 3, 7, 14, 30];
+const PHASES = [
+  { from: 1, to: 21, lvl: "A1 → A2", units: ["u1", "u2", "u3", "u4"], input: "Karrewiet · Wablieft",
+    name: ["Cimientos", "Alicerces", "Foundations", "Fondations"],
+    focus: ["Pronunciación (ui, eu, ij, g), el verbo en segunda posición y las 1000 palabras más frecuentes, siempre dentro de frases.", "Pronúncia (ui, eu, ij, g), o verbo na segunda posição e as 1000 palavras mais frequentes, sempre em frases.", "Pronunciation (ui, eu, ij, g), verb-second word order and the 1,000 most frequent words, always in sentences.", "Prononciation (ui, eu, ij, g), verbe en deuxième position et les 1 000 mots les plus fréquents, toujours en phrases."],
+    goal: ["Presentarte durante 2 minutos sin pausas largas.", "Apresentar-se por 2 minutos sem pausas longas.", "Introduce yourself for 2 minutes without long pauses.", "Te présenter pendant 2 minutes sans longues pauses."] },
+  { from: 22, to: 49, lvl: "A2 → B1", units: ["u5", "u6", "u7", "u8"], input: "VRT NWS · Het Journaal",
+    name: ["Estructura", "Estrutura", "Structure", "Structure"],
+    focus: ["Subordinadas (el verbo va al final), perfecto e imperfecto, verbos separables, er y om… te. Intercala siempre subordinadas con inversión.", "Subordinadas (o verbo vai para o final), perfeito e imperfeito, verbos separáveis, er e om… te. Intercale sempre subordinadas com inversão.", "Subordinate clauses (verb last), perfect and past tense, separable verbs, er and om… te. Always interleave subordinate clauses with inversion.", "Subordonnées (verbe à la fin), passé composé et imparfait, verbes séparables, er et om… te. Entrelace toujours subordonnées et inversion."],
+    goal: ["Contar una anécdota en pasado durante 5 minutos.", "Contar uma história no passado por 5 minutos.", "Tell a story in the past for 5 minutes.", "Raconter une anecdote au passé pendant 5 minutes."] },
+  { from: 50, to: 77, lvl: "B1 → B2", units: ["u9", "u10"], input: "Radio 1 · VRT MAX",
+    name: ["Fluidez", "Fluência", "Fluency", "Aisance"],
+    focus: ["Pasiva, condicional, conectores (hoewel, tenzij, zodat), registro formal e informal y rasgos flamencos: ge/gij, tussentaal, diminutivo -ke.", "Voz passiva, condicional, conectores (hoewel, tenzij, zodat), registro formal e informal e traços flamengos: ge/gij, tussentaal, diminutivo -ke.", "Passive, conditional, connectors (hoewel, tenzij, zodat), formal vs informal register and Flemish features: ge/gij, tussentaal, the -ke diminutive.", "Passif, conditionnel, connecteurs (hoewel, tenzij, zodat), registre formel et familier, et traits flamands : ge/gij, tussentaal, diminutif -ke."],
+    goal: ["Debatir tu opinión durante 10 minutos.", "Debater sua opinião por 10 minutos.", "Debate your opinion for 10 minutes.", "Défendre ton opinion pendant 10 minutes."] },
+  { from: 78, to: 90, lvl: "B2", units: [], input: "ITNA · CNaVT",
+    name: ["Presión real", "Pressão real", "Real pressure", "Conditions réelles"],
+    focus: ["Simulacros cronometrados (ITNA / CNaVT), repasa solo las tarjetas difíciles y 30 minutos diarios de conversación sin recurrir a tu idioma.", "Simulados cronometrados (ITNA / CNaVT), revise só os cartões difíceis e 30 minutos diários de conversa sem usar seu idioma.", "Timed mock exams (ITNA / CNaVT), review only the hard cards, and 30 minutes of conversation a day without your own language.", "Examens blancs chronométrés (ITNA / CNaVT), uniquement les cartes difficiles et 30 minutes de conversation par jour sans ta langue."],
+    goal: ["Llegar a B2 en el test de nivel.", "Chegar ao B2 no teste de nível.", "Reach B2 on the level test.", "Atteindre B2 au test de niveau."] }
+];
+/* Plantilla semanal: índice = getDay() (0 = domingo) */
+const WEEKPLAN = [
+  { goto: "plan", t: ["Feynman + auditoría", "Feynman + auditoria", "Feynman + audit", "Feynman + bilan"], d: ["Explica la regla de la semana (aquí abajo) y apunta tus métricas.", "Explique a regra da semana (aqui embaixo) e anote suas métricas.", "Explain the week's rule (below) and log your metrics.", "Explique la règle de la semaine (ci-dessous) et note tes mesures."] },
+  { goto: "temas", t: ["Gramática nueva + repaso", "Gramática nova + revisão", "New grammar + review", "Grammaire nouvelle + révision"], d: ["Lección nueva del curso y repaso mixto con lo de la semana anterior.", "Lição nova do curso e revisão mista com a semana anterior.", "A new course lesson and a mixed review with last week's material.", "Nouvelle leçon du cours et révision mixte avec la semaine passée."] },
+  { goto: "kranten", t: ["Vocabulario + escucha", "Vocabulário + escuta", "Vocabulary + listening", "Vocabulaire + écoute"], d: ["Tarjetas de un tema y shadowing de 10 frases de las noticias.", "Cartões de um tema e shadowing de 10 frases das notícias.", "Cards from one topic and shadowing 10 news sentences.", "Cartes d'un thème et shadowing de 10 phrases des actus."] },
+  { goto: "temas", t: ["Gramática nueva + conversación", "Gramática nova + conversa", "New grammar + conversation", "Grammaire nouvelle + conversation"], d: ["Segunda lección de la semana y 15 minutos de juego de rol o conversación.", "Segunda lição da semana e 15 minutos de role-play ou conversa.", "The week's second lesson and 15 minutes of role-play or conversation.", "Deuxième leçon de la semaine et 15 minutes de jeu de rôle ou de conversation."] },
+  { goto: "kranten", t: ["Lectura + escritura", "Leitura + escrita", "Reading + writing", "Lecture + écriture"], d: ["Lee una noticia y escribe 150 palabras. Cada error, a una tarjeta.", "Leia uma notícia e escreva 150 palavras. Cada erro vira cartão.", "Read a news story and write 150 words. Every mistake becomes a card.", "Lis une actu et écris 150 mots. Chaque erreur devient une carte."] },
+  { goto: "test", t: ["Mezcla total", "Mistura total", "Full mix", "Mélange total"], d: ["Dos rondas de repaso mixto y un simulacro de 20 minutos (test de nivel).", "Duas rodadas de revisão mista e um simulado de 20 minutos (teste de nível).", "Two rounds of mixed review and a 20-minute mock test (level test).", "Deux manches de révision mixte et un examen blanc de 20 minutes (test de niveau)."] },
+  { goto: "uitspraak", t: ["Inmersión larga", "Imersão longa", "Long immersion", "Immersion longue"], d: ["60–90 minutos de serie, radio o podcast flamenco, sin subtítulos en tu idioma.", "60–90 minutos de série, rádio ou podcast flamengo, sem legendas no seu idioma.", "60–90 minutes of a Flemish series, radio or podcast, no subtitles in your language.", "60 à 90 minutes de série, radio ou podcast flamand, sans sous-titres dans ta langue."] }
+];
+const STEPS = [["recall", 10, null], ["cards", 20, "werkwoorden"], ["block", 30, "mix"], ["input", 20, "kranten"], ["output", 15, "uitspraak"], ["close", 5, null]];
+const STEP_MIN = STEPS.reduce((a, s) => a + s[1], 0);
+
+function planDayOf(isoStr) {
+  if (!prog.plan) return 0;
+  const [y, m, d] = prog.plan.start.split("-").map(Number), [y2, m2, d2] = isoStr.split("-").map(Number);
+  return Math.round((Date.UTC(y2, m2 - 1, d2) - Date.UTC(y, m - 1, d)) / 86400000) + 1;
+}
+const planDay = () => planDayOf(TODAY);
+const phaseOf = day => PHASES.find(p => day >= p.from && day <= p.to) || PHASES[PHASES.length - 1];
+function savePlan() { store.set("ved.progress", prog); }
+function stepsDone(dateIso) {
+  const p = prog.plan; if (!p) return new Set();
+  const s = new Set((p.log && p.log[dateIso]) || []);
+  if (dateIso === TODAY) {
+    const r = routineDone();
+    if (r.has("verbs")) s.add("cards");
+    if (r.has("listen")) s.add("input");
+    if (r.has("pron")) s.add("output");
+    const n = (p.notes || {})[TODAY] || {};
+    if ((n.recall || "").trim().split(/\s+/).filter(Boolean).length >= 5) s.add("recall");
+    if ((n.close || "").trim()) s.add("close");
+  }
+  return s;
+}
+function markStep(k, on = true) {
+  const p = prog.plan; if (!p) return;
+  p.log = p.log || {};
+  const cur = new Set(p.log[TODAY] || []);
+  on ? cur.add(k) : cur.delete(k);
+  p.log[TODAY] = [...cur]; savePlan();
+}
+
+/* Repaso mixto: ejercicios de las lecciones hechas + la siguiente, intercalados por lección */
+function mixPool() {
+  const res = prog.course || {};
+  const ids = COURSE.filter(u => res[u.id] != null).map(u => u.id);
+  const next = COURSE.find(u => res[u.id] == null); if (next) ids.push(next.id);
+  if (ids.length < 3) COURSE.slice(0, 3).forEach(u => { if (!ids.includes(u.id)) ids.push(u.id); });
+  return ids.flatMap(id => COURSE.find(u => u.id === id).ex.map((x, k) => Object.assign({}, x, { key: id + ":" + k, uid: id })).filter(x => !["write", "speak"].includes(x.t)));
+}
+function interleave(items) {
+  const g = {}; items.forEach(x => (g[x.uid] = g[x.uid] || []).push(x));
+  const keys = shuffle(Object.keys(g)), out = [];
+  while (out.length < items.length) keys.forEach(k => { if (g[k].length) out.push(g[k].shift()); });
+  return out;
+}
+function mixCounts() {
+  const m = prog.mix || {}, v = Object.values(m);
+  return { due: v.filter(c => c.due <= TODAY).length, solid: v.filter(c => c.box >= 2).length, seen: v.length };
+}
+function buildMix(n = 10) {
+  const m = prog.mix || {}, pool = mixPool();
+  const due = shuffle(pool.filter(x => m[x.key] && m[x.key].due <= TODAY));
+  const fresh = interleave(shuffle(pool.filter(x => !m[x.key])));
+  const later = pool.filter(x => m[x.key] && m[x.key].due > TODAY).sort((a, b) => m[a.key].box - m[b.key].box);
+  const pick = [];
+  for (const x of [...due, ...fresh, ...later]) { if (pick.length >= n) break; pick.push(x); }
+  return interleave(pick);
+}
+function mixUpdate(key, ok) {
+  prog.mix = prog.mix || {};
+  const c = prog.mix[key] || { box: -1 };
+  c.box = ok ? Math.min(c.box + 1, MIX_DAYS.length - 1) : 0;
+  c.due = addDays(TODAY, ok ? MIX_DAYS[c.box] : 1);
+  prog.mix[key] = c;
+  if (prog.plan) { prog.plan.rev = prog.plan.rev || {}; const r = prog.plan.rev[TODAY] || [0, 0]; r[0] += ok ? 1 : 0; r[1]++; prog.plan.rev[TODAY] = r; }
+  savePlan();
+}
+function startMix() {
+  const ex = buildMix(10); if (!ex.length) return;
+  stopAudio(); showTab("temas");
+  learnMode = "course"; store.set("ved.learn", learnMode); renderLearnSwitch();
+  curUnit = { id: "mix", mix: true, mod: "mix", lvl: phaseOf(Math.max(1, planDay())).lvl.split(" ")[0], nl: "Gemengde herhaling", name: I18N["mix.name"], rule: { nl: "", ex: "", tr: ["", "", "", ""] }, ex };
+  unitState = { i: 0, ok: 0, done: [] };
+  document.getElementById("course-list").hidden = true;
+  document.getElementById("unit-view").hidden = false;
+  renderUnit(); window.scrollTo({ top: 0 });
+}
+function renderMixDone(el, head, pct) {
+  if (prog.plan) markStep("block");
+  logPractice("theme"); addXP(5);
+  el.innerHTML = head + `<div class="card" style="display:flex;flex-direction:column;gap:14px"><p class="eyebrow">${t("mix.done")}</p><h2>${t("unit.score", { n: pct })}</h2>
+    <p class="muted">${t("mix.stats", { d: mixCounts().due, l: mixCounts().solid, s: mixCounts().seen })}</p>
+    <div class="row"><button class="btn" id="mix-again">${t("mix.again")}</button><button class="btn primary" id="mix-plan">${t("mix.back")}</button></div></div>`;
+  el.querySelector("#unit-back").onclick = closeUnit;
+  el.querySelector("#mix-again").onclick = startMix;
+  el.querySelector("#mix-plan").onclick = closeUnit;
+}
+
+function weekRetention(w) {
+  const rev = (prog.plan && prog.plan.rev) || {}; let ok = 0, tot = 0;
+  for (let d = (w - 1) * 7 + 1; d <= w * 7; d++) { const r = rev[addDays(prog.plan.start, d - 1)]; if (r) { ok += r[0]; tot += r[1]; } }
+  return tot ? Math.round(100 * ok / tot) : null;
+}
+function lastRule() {
+  const res = prog.course || {};
+  const done = COURSE.filter(u => res[u.id] != null);
+  return (done[done.length - 1] || COURSE[0]).id;
+}
+
+function renderPlan() {
+  const root = document.getElementById("plan-root"); if (!root) return;
+  const p = prog.plan;
+  const techs = ["recall", "srs", "mix", "feyn"].map(k => `<div class="tech"><b>${t("tech." + k)}</b><span class="muted">${t("tech." + k + ".d")}</span></div>`).join("");
+  const rules = `<details class="card fold"><summary>${t("plan.rules")}</summary><div class="fold-body"><ol class="steps">${[1, 2, 3, 4].map(i => `<li>${t("plan.rule" + i)}</li>`).join("")}</ol></div></details>`;
+  const phasesHTML = (cur) => `<div class="card" style="display:flex;flex-direction:column;gap:10px"><h3>${t("ph.title")}</h3>${PHASES.map((ph, i) => `<div class="phase ${ph === cur ? "now" : ""}">
+      <div class="row" style="justify-content:space-between"><b>${t("plan.phase", { n: i + 1 })} · ${esc(nm(ph.name))}</b><span class="lvl">${ph.lvl}</span></div>
+      <span class="muted" style="font-size:.82rem">${t("ph.days", { a: ph.from, b: ph.to })}${ph.units.length ? " · " + t("ph.lessons") + ": " + ph.units.map(id => esc(COURSE.find(u => u.id === id).nl)).join(", ") : ""} · ${t("ph.input")}: ${esc(ph.input)}</span>
+      <span style="font-size:.9rem">${esc(nm(ph.focus))}</span><span style="font-size:.86rem"><b>${t("plan.goal")}:</b> ${esc(nm(ph.goal))}</span></div>`).join("")}</div>`;
+
+  if (!p) {
+    root.innerHTML = `<div class="plan-hero"><p class="eyebrow">${t("plan.title")}</p><h2>A1 → B2 · 90</h2><p class="muted">${t("plan.intro")}</p>
+      <button class="btn primary block" id="plan-start">${t("plan.start")}</button></div>
+      <div class="card" style="display:flex;flex-direction:column;gap:10px"><h3>${t("plan.tech")}</h3><div class="tech-grid">${techs}</div></div>
+      ${phasesHTML(null)}${rules}`;
+    root.querySelector("#plan-start").onclick = () => { prog.plan = { start: TODAY, log: {}, notes: {}, rev: {}, weeks: {}, feyn: {} }; savePlan(); renderPlan(); if (window.__homeReady) renderHome(); };
+    return;
+  }
+
+  const day = planDay(), dShow = Math.min(Math.max(day, 1), PLAN_LEN), week = Math.ceil(dShow / 7), ph = phaseOf(dShow), phN = PHASES.indexOf(ph) + 1;
+  const wd = WEEKPLAN[today.getDay()], done = stepsDone(TODAY), notes = (p.notes || {})[TODAY] || {};
+  const yClose = ((p.notes || {})[yesterday] || {}).close;
+  const finished = day > PLAN_LEN;
+
+  const stepHTML = ([k, min, go]) => {
+    const extra = k === "recall" ? `${yClose ? `<div class="recall-y"><span class="muted" style="font-size:.85rem">${t("plan.yesterday")}</span><button class="btn small" type="button" id="y-check">${t("plan.check")}</button><span id="y-ans" hidden><b>${esc(yClose)}</b></span></div>` : ""}<textarea data-note="recall" rows="3" placeholder="${t("plan.notes.ph")}" spellcheck="false">${esc(notes.recall || "")}</textarea>`
+      : k === "close" ? `<textarea data-note="close" rows="2" placeholder="${t("plan.notes.ph")}" spellcheck="false">${esc(notes.close || "")}</textarea>` : "";
+    const btn = go === "mix" ? `<button class="btn small" type="button" data-mix="1">${min} min →</button>` : go ? `<button class="btn small" type="button" data-goto="${go}">${min} min →</button>` : `<span class="muted" style="font-size:.85rem">${min} min</span>`;
+    return `<div class="pstep ${done.has(k) ? "done" : ""}"><label><input type="checkbox" data-step="${k}" ${done.has(k) ? "checked" : ""}><span><b>${t("s." + k)}</b><span class="why">${t("s." + k + ".why")}</span></span>${btn}</label>${extra}</div>`;
+  };
+
+  const mc = mixCounts();
+  const fw = (p.feyn || {})[week] || {};
+  const fUnit = COURSE.find(u => u.id === (fw.unit || lastRule())) || COURSE[0];
+  const wk = (p.weeks || {})[week] || {};
+  const ret = weekRetention(week);
+  const tgtWpm = phN === 1 ? 60 : phN === 2 ? 90 : 120, tgtComp = dShow <= 30 ? 30 : dShow <= 60 ? 70 : 90;
+  const retMsg = ret == null ? t("met.none") : ret < 85 ? t("met.low") : ret > 90 ? t("met.high") : t("met.ok");
+  const rows = [];
+  for (let w = 1; w <= week; w++) { const x = (p.weeks || {})[w] || {}, r = weekRetention(w); rows.push(`<tr${w === week ? ' class="cur"' : ""}><td>${w}</td><td>${r == null ? "—" : r + " %"}</td><td>${x.wpm ?? "—"}</td><td>${x.err ?? "—"}</td><td>${x.comp != null ? x.comp + " %" : "—"}</td></tr>`); }
+
+  const cal = [];
+  for (let w = 1; w <= 13; w++) {
+    cal.push(`<span class="wk">${w}</span>`);
+    for (let d = (w - 1) * 7 + 1; d <= w * 7; d++) {
+      if (d > PLAN_LEN) { cal.push(`<i class="none"></i>`); continue; }
+      const s = stepsDone(addDays(p.start, d - 1)).size;
+      cal.push(`<i class="${s >= STEPS.length ? "full" : s ? "part" : ""} ${d === day ? "today" : d > day ? "future" : ""}" title="${t("plan.day", { n: d })}"></i>`);
+    }
+  }
+
+  root.innerHTML = `<div class="plan-hero">
+      <div class="row" style="justify-content:space-between"><p class="eyebrow">${t("plan.title")} · ${t("plan.week", { n: week })}</p><span class="lvl">${ph.lvl}</span></div>
+      <h2>${t("plan.day", { n: dShow })}</h2>
+      <div class="plan-bar"><i style="width:${(100 * dShow / PLAN_LEN).toFixed(1)}%"></i></div>
+      ${finished ? `<p>${t("plan.finished")}</p>` : `<p><b>${t("plan.phase", { n: phN })} · ${esc(nm(ph.name))}.</b> <span class="muted">${esc(nm(ph.focus))}</span></p>
+      <p style="font-size:.9rem"><b>${t("plan.goal")}:</b> ${esc(nm(ph.goal))}</p>`}
+    </div>
+    <div class="card today-focus"><p class="eyebrow">${t("plan.todayFocus")} · ${today.toLocaleDateString("nl-BE", { weekday: "long" })}</p><h3>${esc(nm(wd.t))}</h3><p class="muted">${esc(nm(wd.d))}</p>
+      ${wd.goto !== "plan" ? `<button class="btn small" data-goto="${wd.goto}" style="align-self:flex-start">${t("plan.go")} →</button>` : ""}</div>
+    <div class="card" style="display:flex;flex-direction:column;gap:12px">
+      <div class="row" style="justify-content:space-between"><h3>${t("plan.session", { m: STEP_MIN })}</h3><span class="muted" id="plan-count">${t("plan.of", { a: done.size, b: STEPS.length })}</span></div>
+      <div class="psteps">${STEPS.map(stepHTML).join("")}</div>
+      ${done.size === STEPS.length ? `<div class="feedback ok pop"><b>${t("plan.allDone")}</b></div>` : ""}
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:10px">
+      <h3>${t("mix.title")}</h3><p class="muted" style="font-size:.9rem">${t("mix.intro")}</p>
+      <p class="eyebrow">${t("mix.stats", { d: mc.due, l: mc.solid, s: mc.seen })}</p>
+      <button class="btn primary block" data-mix="1">${t("mix.start")}</button>
+    </div>
+    <div class="card ${today.getDay() === 0 ? "sunday" : ""}" style="display:flex;flex-direction:column;gap:10px" id="feyn">
+      <h3>${t("feyn.title")}</h3>${today.getDay() === 0 ? `<p class="tag" style="align-self:flex-start">${t("feyn.sunday")}</p>` : ""}
+      <label class="muted" style="font-size:.85rem">${t("feyn.rule")}<select id="feyn-unit">${COURSE.map(u => `<option value="${u.id}" ${u === fUnit ? "selected" : ""}>${esc(u.nl)} · ${esc(u.rule.nl)}</option>`).join("")}</select></label>
+      <p style="font-size:.9rem"><b>${t("feyn.a")}</b></p><textarea id="feyn-a" rows="4" spellcheck="false">${esc(fw.a || "")}</textarea>
+      <p style="font-size:.9rem"><b>${t("feyn.b")}</b></p><textarea id="feyn-b" rows="4" spellcheck="false">${esc(fw.b || "")}</textarea>
+      <div class="row"><button class="btn" id="feyn-cmp">${t("feyn.compare")}</button>${sample ? `<button class="btn primary" id="feyn-claude">${t("feyn.claude")}</button>` : ""}</div>
+      <div id="feyn-out" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:10px">
+      <h3>${t("met.title")} · ${t("plan.week", { n: week })}</h3><p class="muted" style="font-size:.9rem">${t("met.intro")}</p>
+      <div class="met-grid">
+        <div class="met"><span class="muted">${t("met.ret")}</span><b>${ret == null ? "—" : ret + " %"}</b><span class="muted">${t("met.target")}: 85–90 %</span></div>
+        <label class="met"><span class="muted">${t("met.wpm")}</span><input type="number" min="0" max="300" id="met-wpm" value="${wk.wpm ?? ""}" inputmode="numeric"><span class="muted">${t("met.target")}: ${tgtWpm}</span></label>
+        <label class="met"><span class="muted">${t("met.err")}</span><input type="number" min="0" max="50" step="0.5" id="met-err" value="${wk.err ?? ""}" inputmode="decimal"><span class="muted">${t("met.target")}: ↓</span></label>
+        <label class="met"><span class="muted">${t("met.comp")}</span><input type="number" min="0" max="100" id="met-comp" value="${wk.comp ?? ""}" inputmode="numeric"><span class="muted">${t("met.target")}: ${tgtComp} %</span></label>
+      </div>
+      <p style="font-size:.9rem">${retMsg}</p>
+      <div class="row"><button class="btn primary" id="met-save">${t("met.save", { n: week })}</button><span class="status" id="met-status"></span></div>
+      <div style="overflow-x:auto"><table class="met-table"><thead><tr><th>#</th><th>${t("met.ret")}</th><th>${t("met.wpm")}</th><th>${t("met.err")}</th><th>${t("met.comp")}</th></tr></thead><tbody>${rows.join("")}</tbody></table></div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:10px"><h3>${t("cal.title")}</h3><div class="plan-cal">${cal.join("")}</div><p class="muted" style="font-size:.82rem">${t("cal.legend")}</p></div>
+    ${phasesHTML(finished ? null : ph)}
+    <div class="card" style="display:flex;flex-direction:column;gap:10px"><h3>${t("plan.tech")}</h3><div class="tech-grid">${techs}</div></div>
+    ${rules}
+    <button class="btn ghost small" id="plan-reset" style="align-self:center">${t("plan.reset")}</button>`;
+
+  root.querySelectorAll("[data-step]").forEach(c => c.onchange = () => { markStep(c.dataset.step, c.checked); renderPlan(); if (window.__homeReady) renderHome(); });
+  root.querySelectorAll("[data-mix]").forEach(b => b.onclick = startMix);
+  root.querySelectorAll("[data-note]").forEach(ta => {
+    ta.oninput = () => { p.notes = p.notes || {}; const n = p.notes[TODAY] = p.notes[TODAY] || {}; n[ta.dataset.note] = ta.value; savePlan(); };
+    ta.onchange = () => { const s = stepsDone(TODAY); root.querySelectorAll("[data-step]").forEach(c => { c.checked = s.has(c.dataset.step); c.closest(".pstep").classList.toggle("done", c.checked); }); root.querySelector("#plan-count").textContent = t("plan.of", { a: s.size, b: STEPS.length }); if (window.__homeReady) renderHome(); };
+  });
+  const yc = root.querySelector("#y-check");
+  if (yc) yc.onclick = () => { yc.hidden = true; const a = root.querySelector("#y-ans"); a.hidden = false; a.insertAdjacentHTML("beforeend", " " + speakBtn(yClose)); };
+  const saveFeyn = () => { p.feyn = p.feyn || {}; p.feyn[week] = { unit: root.querySelector("#feyn-unit").value, a: root.querySelector("#feyn-a").value, b: root.querySelector("#feyn-b").value }; savePlan(); };
+  ["#feyn-unit", "#feyn-a", "#feyn-b"].forEach(s => root.querySelector(s).addEventListener("input", saveFeyn));
+  root.querySelector("#feyn-cmp").onclick = () => {
+    saveFeyn();
+    const u = COURSE.find(x => x.id === root.querySelector("#feyn-unit").value);
+    root.querySelector("#feyn-out").innerHTML = `<div class="card rule-card"><p class="eyebrow">${t("unit.rule")} · Taalregel</p><h3>${esc(u.rule.nl)}</h3><p class="ex-line">${esc(u.rule.ex)}</p><p>${esc(nm(u.rule.tr))}</p></div><p class="hint">${t("feyn.gap")}</p>`;
+  };
+  const fc = root.querySelector("#feyn-claude");
+  if (fc) fc.onclick = async () => {
+    saveFeyn();
+    const u = COURSE.find(x => x.id === root.querySelector("#feyn-unit").value), a = root.querySelector("#feyn-a").value.trim(), b = root.querySelector("#feyn-b").value.trim();
+    const out = root.querySelector("#feyn-out");
+    if (!a && !b) { root.querySelector("#feyn-a").focus(); return; }
+    out.innerHTML = `<p class="status">${t("chat.thinking")}</p>`;
+    const ln = LANG_NAME[LANG];
+    const prompt = `Eres profesor de NT2 en un CVO de Flandes y aplicas la técnica Feynman. Un alumno cuya lengua es el ${ln} ha explicado con sus palabras esta regla del neerlandés de Bélgica.
+REGLA: ${u.rule.nl} — ${u.rule.ex} — ${u.rule.tr[0]}
+EXPLICACIÓN EN SU IDIOMA: ${a || "(vacía)"}
+EXPLICACIÓN EN NEERLANDÉS: ${b || "(vacía)"}
+Responde SOLO con JSON: {"goed":"lo que ha entendido bien, una frase en ${ln}","lagunas":["cada laguna, error o simplificación incorrecta explicada en ${ln} en una frase corta, máximo 4"],"verbeterd":"su explicación en neerlandés corregida, cambiando lo mínimo (vacío si no escribió nada)","vraag":"una pregunta corta en neerlandés para comprobar si domina la regla"}`;
+    try {
+      const r = await sample.json(prompt, { cache: false });
+      const g = Array.isArray(r.lagunas) ? r.lagunas : [];
+      out.innerHTML = `<div class="feedback ${g.length ? "ko" : "ok"} pop">${r.goed ? `<p><b>${t("feyn.ok")}:</b> ${esc(r.goed)}</p>` : ""}
+        ${g.length ? `<p class="eyebrow">${t("feyn.gaps")}</p><ul>${g.map(y => `<li>${esc(y)}</li>`).join("")}</ul>` : ""}
+        ${r.verbeterd && b ? `<p class="eyebrow">${t("write.fixed")}</p><p class="diff">${diffWords(String(r.verbeterd), b).html}</p>` : ""}
+        ${r.vraag ? `<p class="eyebrow">${t("feyn.q")}</p><p><b>${esc(r.vraag)}</b> ${speakBtn(r.vraag)}</p>` : ""}</div>`;
+    } catch (e) { out.innerHTML = `<p class="status">${t("err.claude")}</p>`; if (e && HIDE.includes(e.code)) sample = null; }
+  };
+  root.querySelector("#met-save").onclick = () => {
+    const num = id => { const v = root.querySelector(id).value; return v === "" ? null : +v; };
+    p.weeks = p.weeks || {}; p.weeks[week] = { wpm: num("#met-wpm"), err: num("#met-err"), comp: num("#met-comp") };
+    savePlan(); renderPlan(); const s = document.getElementById("met-status"); if (s) s.textContent = t("met.saved");
+  };
+  root.querySelector("#plan-reset").onclick = () => {
+    if (!confirm(t("plan.resetQ"))) return;
+    prog.plan = { start: TODAY, log: {}, notes: {}, rev: {}, weeks: {}, feyn: {} }; savePlan(); renderPlan(); if (window.__homeReady) renderHome();
+  };
+}
+
 /* ---------- Selector de voz */
 const VOICE_SAMPLE = "Goeiedag! Welkom bij Vlaams elke dag. Vandaag lezen we samen het nieuws uit Limburg.";
 window.__renderVoicePicker = function () {
@@ -2734,7 +3159,9 @@ function renderHome() {
   const phrase = pickPhrases("frases:" + TODAY)[0];
   const tile = (goto, icon, title, sub, foot, wide, learn) => `<button class="tile ${wide ? "wide" : ""}" data-goto="${goto}" ${learn ? `data-learn="${learn}"` : ""}><span class="ico"><svg class="i"><use href="#${icon}"/></svg></span><b>${title}</b><span class="t-sub">${sub}</span><span class="t-foot">${foot}<svg class="i"><use href="#i-arrow"/></svg></span></button>`;
   const cDone = COURSE.filter(u => (prog.course || {})[u.id] != null).length;
+  const pd = prog.plan ? Math.min(Math.max(planDay(), 1), PLAN_LEN) : 0;
   document.getElementById("tiles").innerHTML =
+    tile("plan", "i-cal", prog.plan ? t("plan.title") + " · " + t("plan.day", { n: pd }) : t("plan.title"), prog.plan ? esc(nm(WEEKPLAN[today.getDay()].t)) + " · " + esc(nm(phaseOf(pd).name)) : esc(t("tile.plan.sub")), prog.plan ? t("tile.plan.today", { a: stepsDone(TODAY).size, b: STEPS.length }) : t("tile.plan.foot"), true) +
     tile("temas", "i-verbs", t("tile.course"), esc(t("tile.course.sub")), t("course.lessons", { n: COURSE.length, d: cDone }), true, "course") +
     tile("temas", "i-layers", t("tile.themes"), esc(t("tile.themes.sub")), t("tile.themes.foot", { n: THEMES.length }), true, "themes") +
     tile("kranten", "i-news", t("tile.news"), esc(NEWS[0] ? NEWS[0].nl : "Vandaag in Limburg"), t("tile.news.foot", { n: NEWS.length })) +
@@ -2750,7 +3177,7 @@ function rerenderAll() {
   renderStats(); renderRoutine(); renderChallenge(); renderVerbs(); renderSrsSummary();
   renderNewsList(); renderNews(); renderPhrases(); newPair(); renderSounds(); refreshMicBanner();
   renderThemesList(); if (curTheme) renderTheme();
-  renderLearnSwitch(); renderCourseHome(); if (curUnit) renderUnit();
+  renderLearnSwitch(); renderCourseHome(); if (curUnit) renderUnit(); renderPlan();
   if (!test) renderTestIntro();
   window.__renderVoicePicker();
   document.getElementById("guide-slot").innerHTML = GUIDE();
@@ -2758,7 +3185,7 @@ function rerenderAll() {
 const langSel = document.getElementById("lang-select");
 langSel.innerHTML = Object.entries(LANGS).map(([k, v]) => `<option value="${k}" ${k === LANG ? "selected" : ""}>${k.toUpperCase()}</option>`).join("");
 langSel.onchange = () => { LANG = langSel.value; store.set("ved.lang", LANG); rerenderAll(); };
-window.__rerender = () => { if (curTheme && thMode === "chat") renderTheme(); if (!hasTTS) { renderSounds(); newPair(); } if (!test) renderTestIntro(); };
+window.__rerender = () => { if (currentTab === "plan") renderPlan(); if (curTheme && thMode === "chat") renderTheme(); if (!hasTTS) { renderSounds(); newPair(); } if (!test) renderTestIntro(); };
 
 startChallenge(false);
 rerenderAll();
